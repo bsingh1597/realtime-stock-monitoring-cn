@@ -37,7 +37,7 @@ export default function StockClient() {
         accessor: 'price'
     }, {
         Header: 'P/L',
-        accessor: 'pi'
+        accessor: 'pl'
     }]
 
     useEffect(() => {
@@ -45,7 +45,7 @@ export default function StockClient() {
         intialStocks.map((tkr) => {
             console.log("tkrs 1: "+tkr)
             setCurrentSubsTkr(...currentSubsTkr, tkr)
-            setRowData([...rowData, {symbol : tkr, companyName: tkr, price: "", pi: ""}])
+            setRowData([...rowData, {symbol : tkr, companyName: tkr, price: 0, pl: 0}])
 
         })
         wsClient.onopen = () => {
@@ -64,7 +64,6 @@ export default function StockClient() {
     wsClient.onmessage = (res) => {
         console.log('On message' + JSON.stringify(res.data));
         const response = JSON.parse(res.data)
-        console.log("checking "+JSON.stringify(response.data))
         if(response.data) {
             console.log("it is in")
             updateStockPrice(res.data)
@@ -80,9 +79,15 @@ export default function StockClient() {
             console.log("Iteam checking is: "+item.symbol)
             
             if (item.symbol === stockRes.data[0].s) {
+                const latestPrice = stockRes.data[0].p
+                const previousPrice = item.price
+                const percentageChange = (latestPrice - previousPrice)/previousPrice*100 
+                
               return {
                 ...item,
-                price: stockRes.data[0].p,
+                price: latestPrice,
+                pl : percentageChange.toFixed(7)
+                
               };
             }
             return item;
@@ -97,7 +102,7 @@ export default function StockClient() {
         )
         setCurrentSubsTkr(...currentSubsTkr, tkr)
         console.log("Subs tkr after " + currentSubsTkr);
-        setRowData([...rowData, {symbol : tkr, companyName: tkr, price: "", pi: ""}])
+        setRowData([...rowData, {symbol : tkr, companyName: tkr, price: 0, pl: 0}])
     };
 
     return (
