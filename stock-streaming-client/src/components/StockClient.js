@@ -78,7 +78,7 @@ export default function StockClient() {
         setRowData(rowData.map(item => {
             console.log("Iteam checking is: "+item.symbol)
             
-            if (item.symbol === stockRes.data[0].s) {
+            if (item.symbol === stockRes.data[0].s && item.price !== stockRes.data[0].p) {
                 const latestPrice = stockRes.data[0].p
                 const previousPrice = item.price
                 const percentageChange = (latestPrice - previousPrice)/previousPrice*100 
