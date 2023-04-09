@@ -33,6 +33,7 @@ export default function NavBar() {
         </ul>
       ) : null} */}
     </nav>
+    
   );
 }
 

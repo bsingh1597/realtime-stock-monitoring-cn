@@ -3,6 +3,8 @@ import { w3cwebsocket as WebSocket } from "websocket";
 import { format } from 'react-string-format';
 import Table from "./Table";
 
+import '../styles/StockClient.css'
+
 const WS_URL = "wss://ws.finnhub.io?token=cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0"
 
 const wsClient = new WebSocket(WS_URL)
@@ -109,14 +111,17 @@ export default function StockClient() {
         <>
             <div className="ProfileNavBar">
                 <h1>Hello Web sockets</h1>
+                <div className="search">
                 <>
                     <input className="enter-tkr" type="text" ref={enterTkr} />
                     <button className="search-tker" onClick={subscribeTkr}>Search</button>
                 </>
+                </div>
                 <div className="stock-table">
                     <Table columns={columns}
                         data={rowData} />
                 </div>
+                
             </div>
         </>
     );

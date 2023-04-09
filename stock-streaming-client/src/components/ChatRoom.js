@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { over } from 'stompjs';
 import SockJS from 'sockjs-client';
-// import "../styles/ChatRoom.css"
+import "./ChatRoom.css"
 
 var stompClient = null;
 const ChatRoom = () => {
@@ -26,7 +26,6 @@ const ChatRoom = () => {
     const onConnected = () => {
         setUserData({ ...userData, "connected": true });
         stompClient.subscribe('/chatroom/public', onMessageReceived);
-    //  stompClient.subscribe('/client/' + userData.userName + '/private', onPrivateMessage);
         userJoin();
     }
 
@@ -54,19 +53,6 @@ const ChatRoom = () => {
         }
     }
 
-    // const onPrivateMessage = (req) => {
-    //     let reqData = JSON.parse(req.body);
-    //     if (privateChats.get(reqData.senderName)) {
-    //         privateChats.get(reqData.senderName).push(reqData);
-    //         setPrivateChats(new Map(privateChats));
-    //     } else {
-    //         let list = [];
-    //         list.push(reqData);
-    //         privateChats.set(reqData.senderName, list);
-    //         setPrivateChats(new Map(privateChats));
-    //     }
-    // }
-
     const onError = (err) => {
     }
 
@@ -86,25 +72,6 @@ const ChatRoom = () => {
             setUserData({ ...userData, "message": "" });
         }
     }
-
-    // const sendPrivateValue = () => {
-    //     if (stompClient) {
-    //         let textMessage = {
-    //             senderName: userData.userName,
-    //             receiverName: tab,
-    //             message: userData.message,
-    //             status: "MESSAGE"
-    //         };
-
-    //         if (userData.userName !== tab) {
-    //             privateChats.get(tab).push(textMessage);
-    //             setPrivateChats(new Map(privateChats));
-    //         }
-    //         stompClient.send("/app/privateMessage", {}, JSON.stringify(textMessage));
-    //         setUserData({ ...userData, "message": "" });
-    //     }
-    // }
-
     const handleUserName = (event) => {
         const { value } = event.target;
         setUserData({ ...userData, "userName": value });
@@ -151,11 +118,6 @@ const ChatRoom = () => {
                                 </li>
                             ))}
                         </ul>
-
-                        {/* <div className="send-message">
-                            <input type="text" className="input-message" placeholder="Enter message" value={userData.message} onChange={handleMessage} />
-                            <button type="button" className="send-button" onClick={sendPrivateValue}>Send</button>
-                        </div> */}
                     </div>}
                 </div>
                 :
