@@ -2,12 +2,15 @@ import React, { ReactDOM, useEffect, useState, useRef } from "react";
 import { w3cwebsocket as WebSocket } from "websocket";
 import { format } from 'react-string-format';
 import Table from "./Table";
+import "../styles/SearchBar.css"
 
 const WS_URL = "wss://ws.finnhub.io?token=cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0"
 
 const wsClient = new WebSocket(WS_URL)
 
 export default function StockClient() {
+
+    var stockOptions = ["Apple", "Google"]
 
     const [rowData, setRowData] = useState([])
 
@@ -18,12 +21,11 @@ export default function StockClient() {
         pl : ""
     }
 
-    const enterTkr = useRef()
+    const [searchTkr, setSearchTkr] = useState("")
     const [currentSubsTkr, setCurrentSubsTkr] = useState([])
 
     //  const intialStocks = ['AAPL','AMZN', '']
     const intialStocks = ['AMZN','BINANCE:BTCUSDT']
-
     const subscribeTemplate = '{"type":"subscribe","symbol":"{0}"}'
 
     const columns = [{
@@ -41,7 +43,6 @@ export default function StockClient() {
     }]
 
     useEffect(() => {
-        // setCurrentSubsTkr({currentSubsTkr :  \[...currentSubsTkr, intialStocks]})
         intialStocks.map((tkr) => {
             console.log("tkrs 1: "+tkr)
             setCurrentSubsTkr(...currentSubsTkr, tkr)
@@ -94,25 +95,56 @@ export default function StockClient() {
           }));
     }
 
-    const subscribeTkr = () => {
-        console.log("Subs tkr before " + currentSubsTkr);
-        const tkr = enterTkr.current.value
-        wsClient.send(
-            format(subscribeTemplate, tkr)
-        )
-        setCurrentSubsTkr(...currentSubsTkr, tkr)
-        console.log("Subs tkr after " + currentSubsTkr);
-        setRowData([...rowData, {symbol : tkr, companyName: tkr, price: 0, pl: 0}])
+    const handleOnChagenSearchTkr = (event) => {
+        setSearchTkr(event.target.value)
+    }
+
+    const handleOnClickDropdown = (searchVal) => {
+        console.log("Selected from dropdown: "+searchVal)
+        setSearchTkr(searchVal)
+    }
+
+    const subscribeTkr = (searchVal) => {
+        console.log("Searched: "+searchVal)
+        // setSearchTkr(searchVal)
+        // console.log("Subs tkr before " + currentSubsTkr);
+        // const tkr = enterTkr.current.value
+        // wsClient.send(
+        //     format(subscribeTemplate, tkr)
+        // )
+        // setCurrentSubsTkr(...currentSubsTkr, tkr)
+        // console.log("Subs tkr after " + currentSubsTkr);
+        // setRowData([...rowData, {symbol : tkr, companyName: tkr, price: 0, pl: 0}])
     };
 
     return (
         <>
             <div className="ProfileNavBar">
-                <h1>Hello Web sockets</h1>
-                <>
-                    <input className="enter-tkr" type="text" ref={enterTkr} />
-                    <button className="search-tker" onClick={subscribeTkr}>Search</button>
-                </>
+                <div className="search-container">
+                    <div className="search-inner">
+                    <input 
+                        className="enter-tkr" 
+                        type="text" 
+                        value={searchTkr} 
+                        onChange={handleOnChagenSearchTkr}/>
+                    <button className="search-tkr" onClick={() => subscribeTkr(searchTkr)}>Search</button>
+                    </div>
+                    <div className="dropdown">
+                        {stockOptions.filter(stock => {
+                            const searchTerm = searchTkr.toLowerCase();
+                            const stockFullName = stock.toLocaleLowerCase();
+
+                            return searchTerm && stockFullName.includes(searchTerm)
+                        })
+                        .slice(0,10)
+                        .map((stock) => 
+                            (<div 
+                                className="dropdown-row"
+                                onClick={() => handleOnClickDropdown(stock)}>
+                                    {stock}</div>
+                            ))}
+                    </div>
+                    </div>
                 <div className="stock-table">
                     <Table columns={columns}
                         data={rowData} />
