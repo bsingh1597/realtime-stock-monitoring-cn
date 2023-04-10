@@ -16,25 +16,25 @@ export default function StockClient() {
     const [rowData, setRowData] = useState([])
 
     let data = {
-        symbol : "",
+        symbol: "",
         companyName: "",
-        price : "",
-        pl : ""
+        price: "",
+        pl: ""
     }
 
     const [searchTkr, setSearchTkr] = useState("")
     const [currentSubsTkr, setCurrentSubsTkr] = useState([])
 
     //  const intialStocks = ['AAPL','AMZN', '']
-    const intialStocks = ['AMZN','BINANCE:BTCUSDT']
+    const intialStocks = ['AMZN', 'BINANCE:BTCUSDT']
     const subscribeTemplate = '{"type":"subscribe","symbol":"{0}"}'
 
     const columns = [{
-        Header: 'Symbol',
-        accessor: 'symbol'
-    }, {
         Header: 'Company Name',
         accessor: 'companyName'
+    }, {
+        Header: 'Symbol',
+        accessor: 'symbol'
     }, {
         Header: 'Price',
         accessor: 'price'
@@ -45,9 +45,9 @@ export default function StockClient() {
 
     useEffect(() => {
         intialStocks.map((tkr) => {
-            console.log("tkrs 1: "+tkr)
+            console.log("tkrs 1: " + tkr)
             setCurrentSubsTkr(...currentSubsTkr, tkr)
-            setRowData([...rowData, {symbol : tkr, companyName: tkr, price: 0, pl: 0}])
+            setRowData([...rowData, { symbol: tkr, companyName: tkr, price: 0, pl: 0 }])
 
         })
         wsClient.onopen = () => {
@@ -61,12 +61,12 @@ export default function StockClient() {
             )
         };
 
-    },[])
+    }, [])
 
     wsClient.onmessage = (res) => {
         console.log('On message' + JSON.stringify(res.data));
         const response = JSON.parse(res.data)
-        if(response.data) {
+        if (response.data) {
             console.log("it is in")
             updateStockPrice(res.data)
         }
@@ -76,24 +76,24 @@ export default function StockClient() {
     const updateStockPrice = (data) => {
         console.log('On message 1' + JSON.parse(data));
         const stockRes = JSON.parse(data)
-        console.log("First data in the array: "+ JSON.stringify(stockRes.data[0].s))
+        console.log("First data in the array: " + JSON.stringify(stockRes.data[0].s))
         setRowData(rowData.map(item => {
-            console.log("Iteam checking is: "+item.symbol)
-            
+            console.log("Iteam checking is: " + item.symbol)
+
             if (item.symbol === stockRes.data[0].s && item.price !== stockRes.data[0].p) {
                 const latestPrice = stockRes.data[0].p
                 const previousPrice = item.price
-                const percentageChange = (latestPrice - previousPrice)/previousPrice*100 
-                
-              return {
-                ...item,
-                price: latestPrice,
-                pl : percentageChange.toFixed(7)
-                
-              };
+                const percentageChange = (latestPrice - previousPrice) / previousPrice * 100
+
+                return {
+                    ...item,
+                    price: latestPrice,
+                    pl: percentageChange.toFixed(7)
+
+                };
             }
             return item;
-          }));
+        }));
     }
 
     const handleOnChagenSearchTkr = (event) => {
@@ -101,21 +101,24 @@ export default function StockClient() {
     }
 
     const handleOnClickDropdown = (searchVal) => {
-        console.log("Selected from dropdown: "+searchVal)
+        console.log("Selected from dropdown: " + searchVal)
         setSearchTkr(searchVal)
     }
 
     const subscribeTkr = (searchVal) => {
-        console.log("Searched: "+searchVal)
-        // setSearchTkr(searchVal)
-        // console.log("Subs tkr before " + currentSubsTkr);
-        // const tkr = enterTkr.current.value
-        // wsClient.send(
-        //     format(subscribeTemplate, tkr)
-        // )
-        // setCurrentSubsTkr(...currentSubsTkr, tkr)
-        // console.log("Subs tkr after " + currentSubsTkr);
-        // setRowData([...rowData, {symbol : tkr, companyName: tkr, price: 0, pl: 0}])
+        console.log("Searched: " + searchVal)
+        if (searchVal !== "" && StockConstant.SYMBOL_MAP[searchVal]) {
+            console.log("Searched Sympbol: " + StockConstant.SYMBOL_MAP[searchVal])
+            setSearchTkr("")
+
+            const tkr = StockConstant.SYMBOL_MAP[searchVal]
+            wsClient.send(
+                format(subscribeTemplate, tkr)
+            )
+            setCurrentSubsTkr(...currentSubsTkr, tkr)
+            console.log("Subs tkr after " + currentSubsTkr);
+            setRowData([...rowData, { symbol: tkr, companyName: searchVal, price: 0, pl: 0 }])
+        }
     };
 
     return (
@@ -123,12 +126,12 @@ export default function StockClient() {
             <div className="ProfileNavBar">
                 <div className="search-container">
                     <div className="search-inner">
-                    <input 
-                        className="enter-tkr" 
-                        type="text" 
-                        value={searchTkr} 
-                        onChange={handleOnChagenSearchTkr}/>
-                    <button className="search-tkr" onClick={() => subscribeTkr(searchTkr)}>Search</button>
+                        <input
+                            className="enter-tkr"
+                            type="text"
+                            value={searchTkr}
+                            onChange={handleOnChagenSearchTkr} />
+                        <button className="search-tkr" onClick={() => subscribeTkr(searchTkr)}>Search</button>
                     </div>
                     <div className="dropdown">
                         {stockOptions.filter(stock => {
@@ -137,15 +140,15 @@ export default function StockClient() {
 
                             return searchTerm && stockFullName.includes(searchTerm)
                         })
-                        .slice(0,10)
-                        .map((stock) => 
-                            (<div 
+                            .slice(0, 10)
+                            .map((stock) =>
+                            (<div
                                 className="dropdown-row"
                                 onClick={() => handleOnClickDropdown(stock)}>
-                                    {stock}</div>
+                                {stock}</div>
                             ))}
                     </div>
-                    </div>
+                </div>
                 <div className="stock-table">
                     <Table columns={columns}
                         data={rowData} />
