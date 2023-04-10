@@ -3,6 +3,7 @@ import { w3cwebsocket as WebSocket } from "websocket";
 import { format } from 'react-string-format';
 import Table from "./Table";
 import "../styles/SearchBar.css"
+import * as StockConstant from "../common/StockNames"
 
 const WS_URL = "wss://ws.finnhub.io?token=cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0"
 
@@ -10,7 +11,7 @@ const wsClient = new WebSocket(WS_URL)
 
 export default function StockClient() {
 
-    var stockOptions = ["Apple", "Google"]
+    const stockOptions = StockConstant.STOCK_LIST
 
     const [rowData, setRowData] = useState([])
 
@@ -56,7 +57,7 @@ export default function StockClient() {
                     format(subscribeTemplate, tkr)
                 )
             }
-                // '{"type":"subscribe","symbol":"BINANCE:BTCUSDT"}'
+                // "{"type":"subscribe","symbol":"BINANCE:BTCUSDT"}"
             )
         };
 
