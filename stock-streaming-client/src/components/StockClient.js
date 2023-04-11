@@ -5,7 +5,7 @@ import Table from "./Table";
 import "../styles/SearchBar.css"
 import * as StockConstant from "../common/StockNames"
 
-const WS_URL = "wss://ws.finnhub.io?token=cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0"
+const WS_URL = StockConstant.FINHUB_WS_API+StockConstant.FINHUB_TOKEN
 
 const wsClient = new WebSocket(WS_URL)
 
@@ -25,9 +25,7 @@ export default function StockClient() {
     const [searchTkr, setSearchTkr] = useState("")
     const [currentSubsTkr, setCurrentSubsTkr] = useState([])
 
-    //  const intialStocks = ['AAPL','AMZN', '']
     const intialStocks = ['Amazon', 'Bitcoin USD']
-    const subscribeTemplate = '{"type":"subscribe","symbol":"{0}"}'
 
     const columns = [{
         Header: 'Company_Name',
@@ -56,7 +54,7 @@ export default function StockClient() {
             intialStocks.map(stockTkr => {
                 const tkr = StockConstant.SYMBOL_MAP[stockTkr]
                 wsClient.send(
-                    format(subscribeTemplate, tkr)
+                    format(StockConstant.SUBSCRIBE_TEMPLATE, tkr)
                 )
             }
                 // "{"type":"subscribe","symbol":"BINANCE:BTCUSDT"}"
@@ -115,7 +113,7 @@ export default function StockClient() {
 
             const tkr = StockConstant.SYMBOL_MAP[searchVal]
             wsClient.send(
-                format(subscribeTemplate, tkr)
+                format(StockConstant.SUBSCRIBE_TEMPLATE, tkr)
             )
             setCurrentSubsTkr(...currentSubsTkr, tkr)
             console.log("Subs tkr after " + currentSubsTkr);
