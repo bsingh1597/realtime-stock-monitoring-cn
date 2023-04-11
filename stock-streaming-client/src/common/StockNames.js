@@ -7,5 +7,6 @@ export const SYMBOL_MAP = {
     "Google": "GOOG",
     "Microsoft": "MSFT",
     "IBM": "IBM",
-    "Sony": "SONY"
+    "Sony": "SONY",
+    "Bitcoin USD": "BINANCE:BTCUSDT"
 }

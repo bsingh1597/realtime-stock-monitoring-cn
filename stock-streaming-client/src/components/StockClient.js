@@ -15,22 +15,22 @@ export default function StockClient() {
 
     const [rowData, setRowData] = useState([])
 
-    let data = {
+    let initialData = [{
         symbol: "",
         companyName: "",
         price: "",
         pl: ""
-    }
+    }]
 
     const [searchTkr, setSearchTkr] = useState("")
     const [currentSubsTkr, setCurrentSubsTkr] = useState([])
 
     //  const intialStocks = ['AAPL','AMZN', '']
-    const intialStocks = ['AMZN', 'BINANCE:BTCUSDT']
+    const intialStocks = ['Amazon', 'Bitcoin USD']
     const subscribeTemplate = '{"type":"subscribe","symbol":"{0}"}'
 
     const columns = [{
-        Header: 'Company Name',
+        Header: 'Company_Name',
         accessor: 'companyName'
     }, {
         Header: 'Symbol',
@@ -44,15 +44,17 @@ export default function StockClient() {
     }]
 
     useEffect(() => {
-        intialStocks.map((tkr) => {
-            console.log("tkrs 1: " + tkr)
+        intialStocks.map((stockTkr) => {
+            console.log("tkrs 1: " + stockTkr)
+            const tkr = StockConstant.SYMBOL_MAP[stockTkr]
             setCurrentSubsTkr(...currentSubsTkr, tkr)
-            setRowData([...rowData, { symbol: tkr, companyName: tkr, price: 0, pl: 0 }])
+            setRowData([...rowData, { symbol: tkr, companyName: stockTkr, price: 0, pl: 0 }])
 
         })
         wsClient.onopen = () => {
             console.log('WebSocket connection established.');
-            intialStocks.map(tkr => {
+            intialStocks.map(stockTkr => {
+                const tkr = StockConstant.SYMBOL_MAP[stockTkr]
                 wsClient.send(
                     format(subscribeTemplate, tkr)
                 )
