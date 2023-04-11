@@ -12,8 +12,14 @@ const wsClient = new WebSocket(WS_URL)
 export default function StockClient() {
 
     const stockOptions = StockConstant.STOCK_LIST
-
+    // Use state hook variable to manage the changing state of variable
     const [rowData, setRowData] = useState([])
+    const [searchTkr, setSearchTkr] = useState("")
+    const [currentSubsTkr, setCurrentSubsTkr] = useState([])
+    const [showTriggerBox, setShowTriggerBox] = useState(false)
+    const triggerPrice = useRef()
+
+    const intialStocks = ['Amazon', 'Bitcoin USD']
 
     let initialData = [{
         symbol: "",
@@ -21,11 +27,6 @@ export default function StockClient() {
         price: "",
         pl: ""
     }]
-
-    const [searchTkr, setSearchTkr] = useState("")
-    const [currentSubsTkr, setCurrentSubsTkr] = useState([])
-
-    const intialStocks = ['Amazon', 'Bitcoin USD']
 
     const columns = [{
         Header: 'Company_Name',
@@ -40,37 +41,67 @@ export default function StockClient() {
         Header: 'P/L',
         accessor: 'pl',
         Cell: (props) => {
-            (console.log("Inside Cell" + props.value))
-            if (props.value > 0) {
-                return (
-                    <p style={{ color: "green" }}>
-                        {props.value + "%"}
-                    </p>
-                );
-            } else if (props.value < 0) {
-                return (
-                    <p style={{ color: "red" }}>
-                        {props.value + "%"}
-                    </p>
-                );
-            } else {
-                return (
-                    <p>
-                        {props.value}
-                    </p>
-                );
+            if (props.value !== "Infinity") {
+                if (props.value > 0) {
+                    return (
+                        <p style={{ color: "green" }}>
+                            {props.value + "%"}
+                        </p>
+                    );
+                } else if (props.value < 0) {
+                    return (
+                        <p style={{ color: "red" }}>
+                            {props.value + "%"}
+                        </p>
+                    );
+                }
             }
+        },
+    }, {
+        Header: 'Trigger',
+        Cell: (props) => {
+            console.log("showTriggerBox: " + showTriggerBox)
+            return (
+                // <p>{props.row.original.symbol}</p>
+                <>
+                    {!showTriggerBox &&
+                        <button
+                            className="show-trigger"
+                            onClick={() => { setShowTriggerBox(true) }}
+                        >Set Trigger</button>}
+                    {showTriggerBox &&
+                        <div>
+                            <input
+                                className="set-trigger-text"
+                                type="text"
+                                ref={triggerPrice} />
+                            <button
+                                className="set-trigger-button"
+                                onClick={handleSetTrigger(props.row.original.symbol)}>
+                                    Submit
+                                </button>
+                        </div>
+                    }
+                </>
+            ); 
         }
     }]
 
+    const handleSetTrigger = (symbol) => {
+        console.log("Inside handleSetTrigger for symbol: "+symbol)
+
+    }
+
+    let initalSubsTkrs = []
     useEffect(() => {
         intialStocks.map((stockTkr) => {
             console.log("tkrs 1: " + stockTkr)
             const tkr = StockConstant.SYMBOL_MAP[stockTkr]
-            setCurrentSubsTkr(...currentSubsTkr, tkr)
-            setRowData([...rowData, { symbol: tkr, companyName: stockTkr, price: 0, pl: 0 }])
+            initalSubsTkrs.push({ symbol: tkr, companyName: stockTkr, price: 0, pl: 0 })
 
         })
+        setRowData(initalSubsTkrs)
+
         wsClient.onopen = () => {
             console.log('WebSocket connection established.');
             intialStocks.map(stockTkr => {
