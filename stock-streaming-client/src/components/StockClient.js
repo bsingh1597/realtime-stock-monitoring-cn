@@ -1,9 +1,12 @@
 import React, { ReactDOM, useEffect, useState, useRef } from "react";
 import { w3cwebsocket as WebSocket } from "websocket";
 import { format } from 'react-string-format';
+import Button from '@mui/material/Button';
 import Table from "./Table";
 import "../styles/SearchBar.css"
+import "../styles/StockClient.css"
 import * as StockConstant from "../common/StockNames"
+
 
 const WS_URL = StockConstant.FINHUB_WS_API + StockConstant.FINHUB_TOKEN
 
@@ -57,38 +60,30 @@ export default function StockClient() {
                 }
             }
         },
-    }, {
-        Header: 'Trigger',
-        Cell: (props) => {
-            console.log("showTriggerBox: " + showTriggerBox)
-            return (
-                // <p>{props.row.original.symbol}</p>
-                <>
-                    {!showTriggerBox &&
-                        <button
-                            className="show-trigger"
-                            onClick={() => { setShowTriggerBox(true) }}
-                        >Set Trigger</button>}
-                    {showTriggerBox &&
-                        <div>
-                            <input
-                                className="set-trigger-text"
-                                type="text"
-                                ref={triggerPrice} />
-                            <button
-                                className="set-trigger-button"
-                                onClick={handleSetTrigger(props.row.original.symbol)}>
-                                    Submit
-                                </button>
-                        </div>
-                    }
-                </>
-            ); 
-        }
+    // }, {
+    //     Header: 'Trigger',
+    //     Cell: (props) => {
+    //         console.log("showTriggerBox: " + showTriggerBox)
+    //         return (
+    //             // <p>{props.row.original.symbol}</p>
+    //             <div className="trigger-cell">
+    //                 <input
+    //                     className="trigger-text"
+    //                     type="text"
+    //                     placeholder="Set Trigger..."
+    //                     ref={triggerPrice} />
+    //                 <Button
+    //                     variant="outlined"
+    //                     onClick={handleSetTrigger(props.row.original.symbol)}>
+    //                     Submit
+    //                 </Button>
+    //             </div>
+    //         );
+    //     }
     }]
 
     const handleSetTrigger = (symbol) => {
-        console.log("Inside handleSetTrigger for symbol: "+symbol)
+        console.log("Inside handleSetTrigger for symbol: " + symbol)
 
     }
 
