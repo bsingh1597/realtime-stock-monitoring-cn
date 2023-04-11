@@ -1,10 +1,12 @@
 
 .trigger-cell {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    /* justify-content: space-between; */
+    /* align-items: center; */
+    padding: 15px;
+    /* height: 25px; */
 }
 
 .trigger-cell button{
-    height: 20px;
+    /* height: 20px; */
 }

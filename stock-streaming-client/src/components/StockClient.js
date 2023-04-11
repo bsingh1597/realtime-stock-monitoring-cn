@@ -1,7 +1,7 @@
 import React, { ReactDOM, useEffect, useState, useRef } from "react";
 import { w3cwebsocket as WebSocket } from "websocket";
 import { format } from 'react-string-format';
-import Button from '@mui/material/Button';
+import { InputLabel, Button, Select, MenuItem, FormControl, TextField } from "@mui/material";
 import Table from "./Table";
 import "../styles/SearchBar.css"
 import "../styles/StockClient.css"
@@ -20,7 +20,8 @@ export default function StockClient() {
     const [searchTkr, setSearchTkr] = useState("")
     const [currentSubsTkr, setCurrentSubsTkr] = useState([])
     const [showTriggerBox, setShowTriggerBox] = useState(false)
-    const triggerPrice = useRef()
+    const [triggerPrice, setTriggerPrice] = useState("")
+    const [triggerStock, setTriggerStock] = useState("")
 
     const intialStocks = ['Amazon', 'Bitcoin USD']
 
@@ -60,26 +61,6 @@ export default function StockClient() {
                 }
             }
         },
-    // }, {
-    //     Header: 'Trigger',
-    //     Cell: (props) => {
-    //         console.log("showTriggerBox: " + showTriggerBox)
-    //         return (
-    //             // <p>{props.row.original.symbol}</p>
-    //             <div className="trigger-cell">
-    //                 <input
-    //                     className="trigger-text"
-    //                     type="text"
-    //                     placeholder="Set Trigger..."
-    //                     ref={triggerPrice} />
-    //                 <Button
-    //                     variant="outlined"
-    //                     onClick={handleSetTrigger(props.row.original.symbol)}>
-    //                     Submit
-    //                 </Button>
-    //             </div>
-    //         );
-    //     }
     }]
 
     const handleSetTrigger = (symbol) => {
@@ -88,14 +69,19 @@ export default function StockClient() {
     }
 
     let initalSubsTkrs = []
+    let initialSubsStocks = []
     useEffect(() => {
-        intialStocks.map((stockTkr) => {
-            console.log("tkrs 1: " + stockTkr)
-            const tkr = StockConstant.SYMBOL_MAP[stockTkr]
-            initalSubsTkrs.push({ symbol: tkr, companyName: stockTkr, price: 0, pl: 0 })
+        intialStocks.map((stockName) => {
+            console.log("tkrs 1: " + stockName)
+            const tkr = StockConstant.SYMBOL_MAP[stockName]
+            initalSubsTkrs.push({ symbol: tkr, companyName: stockName, price: 0, pl: 0 })
+            initialSubsStocks.push(stockName)
 
         })
+
+        console.log("Should only be called once")
         setRowData(initalSubsTkrs)
+        setCurrentSubsTkr(initialSubsStocks)
 
         wsClient.onopen = () => {
             console.log('WebSocket connection established.');
@@ -153,19 +139,26 @@ export default function StockClient() {
         setSearchTkr(searchVal)
     }
 
-    const subscribeTkr = (searchVal) => {
-        console.log("Searched: " + searchVal)
-        if (searchVal !== "" && StockConstant.SYMBOL_MAP[searchVal]) {
-            console.log("Searched Sympbol: " + StockConstant.SYMBOL_MAP[searchVal])
+    const handleSetTriggerSubmit = () => {
+        console.log("trigger price: "+ triggerPrice)
+        console.log("trigger stock: "+ triggerStock)
+        if(triggerPrice && triggerStock) {
+            console.log("trigger val")
+        }
+    }
+
+    const subscribeTkr = (stockName) => {
+        console.log("Searched: " + stockName)
+        if (stockName !== "" && StockConstant.SYMBOL_MAP[stockName]) {
+            console.log("Searched Sympbol: " + StockConstant.SYMBOL_MAP[stockName])
             setSearchTkr("")
 
-            const tkr = StockConstant.SYMBOL_MAP[searchVal]
+            const tkr = StockConstant.SYMBOL_MAP[stockName]
             wsClient.send(
                 format(StockConstant.SUBSCRIBE_TEMPLATE, tkr)
             )
-            setCurrentSubsTkr(...currentSubsTkr, tkr)
-            console.log("Subs tkr after " + currentSubsTkr);
-            setRowData([...rowData, { symbol: tkr, companyName: searchVal, price: 0, pl: 0 }])
+            setCurrentSubsTkr([...currentSubsTkr, stockName])
+            setRowData([...rowData, { symbol: tkr, companyName: stockName, price: 0, pl: 0 }])
         }
     };
 
@@ -200,6 +193,36 @@ export default function StockClient() {
                 <div className="stock-table">
                     <Table columns={columns}
                         data={rowData} />
+                </div>
+                <div className="trigger-cell">
+                <FormControl style={{height:"25px"}} variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                    <InputLabel id="select-label">Set Trigger</InputLabel>
+                    <Select
+                        labelId="select-label"
+                        value={triggerStock}
+                        onChange={(e) => setTriggerStock(e.target.value)}
+                    >
+                        {currentSubsTkr.map((stockname) => {
+                            return(
+                             <MenuItem value={StockConstant.SYMBOL_MAP[stockname]}>{stockname}</MenuItem>
+                        )
+                        })}
+                    </Select>
+                </FormControl>
+                <TextField 
+                    style={{height:"25px"}}
+                    id="outlined-basic" 
+                    label="Trigger Price..." 
+                    variant="outlined"
+                    value={triggerPrice}
+                    onChange={(e) => setTriggerPrice(e.target.value)}
+                    >
+                </TextField>
+                <Button
+                        variant="outlined"
+                        onClick={handleSetTriggerSubmit}>
+                        Submit
+                    </Button>
                 </div>
             </div>
         </>
