@@ -5,7 +5,7 @@ import Table from "./Table";
 import "../styles/SearchBar.css"
 import * as StockConstant from "../common/StockNames"
 
-const WS_URL = StockConstant.FINHUB_WS_API+StockConstant.FINHUB_TOKEN
+const WS_URL = StockConstant.FINHUB_WS_API + StockConstant.FINHUB_TOKEN
 
 const wsClient = new WebSocket(WS_URL)
 
@@ -38,7 +38,29 @@ export default function StockClient() {
         accessor: 'price'
     }, {
         Header: 'P/L',
-        accessor: 'pl'
+        accessor: 'pl',
+        Cell: (props) => {
+            (console.log("Inside Cell" + props.value))
+            if (props.value > 0) {
+                return (
+                    <p style={{ color: "green" }}>
+                        {props.value + "%"}
+                    </p>
+                );
+            } else if (props.value < 0) {
+                return (
+                    <p style={{ color: "red" }}>
+                        {props.value + "%"}
+                    </p>
+                );
+            } else {
+                return (
+                    <p>
+                        {props.value}
+                    </p>
+                );
+            }
+        }
     }]
 
     useEffect(() => {
