@@ -1,17 +1,23 @@
 import React from 'react';
+import { Route, Routes } from "react-router-dom";
 import './App.css';
-import ChatRoom from './components/ChatRoom';
 import NavBar from './components/NavBar';
 import Home from "./components/Home"
-import StockClient from './components/StockClient';
+import Login from './components/Login';
 
 function App() {
   return (
     <>
       <NavBar />
-      <div className="home">
+      {/* <div className="home">
         <Home />
-      </div>
+      </div> */}
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        {/* <Route path="/signup" element={<SignUp />} /> */}
+      </Routes>
     </>
   );
 }
