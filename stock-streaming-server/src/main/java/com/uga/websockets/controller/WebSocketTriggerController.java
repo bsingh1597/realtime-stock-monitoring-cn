@@ -12,6 +12,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.client.RestTemplate;
 
 import com.uga.websockets.entity.Message;
@@ -32,22 +33,31 @@ public class WebSocketTriggerController {
 			+ alertThreshold;
 
 	@Scheduled(fixedDelay = 6000) // run the code every minute
-	public void checkStockPrice() {
-
+	@GetMapping("/trigger")
+	public void checkStockPrice(String triggerStock, Double triggerPrice) {
 		logger.info("Inside checkStockPrice");
 		RestTemplate restTemplate = new RestTemplate();
-		String apiUrl = "https://finnhub.io/api/v1/quote?symbol=" + stockSymbol + "&token=" + finnhubApiKey;
-		
+		String apiUrl = "https://finnhub.io/api/v1/quote?symbol=" + triggerStock + "&token=" + finnhubApiKey;
+
 		Map<String, Object> quote = restTemplate.getForObject(apiUrl, HashMap.class);
 		logger.info("Map for quote" + quote);
 		double stockPrice = (double) quote.get("c");
 		logger.info("Stock Price" + stockPrice);
-		
-		if (stockPrice < alertThreshold) {
+
+		if (stockPrice < triggerPrice) {
 			Message alertMessage = new Message();
 			alertMessage.setMessage(this.alertMessage);
 			sendAlert(alertMessage);
 		}
+	}
+
+	@GetMapping("/trigger")
+	public Map<String, Double> getTrigger(String triggerStock, Double triggerPrice) {
+		Map<String, Double> triggerData = new HashMap<>();
+		triggerData.put(triggerStock, triggerPrice);
+
+		return triggerData;
+
 	}
 
 	@MessageMapping("/alert")
