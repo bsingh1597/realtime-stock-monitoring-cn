@@ -15,3 +15,19 @@
 .search-inner {
     margin-bottom: 5px;
 }
+
+/* .ProfileNavBar{
+    display: flex;
+    width: 30%;
+    height: 0%;
+    flex-direction: column;
+} */
+h1{
+    width: 80%;
+    height: 0%;
+}
+
+.search{
+    display: flex;
+    flex-direction: row;
+}
