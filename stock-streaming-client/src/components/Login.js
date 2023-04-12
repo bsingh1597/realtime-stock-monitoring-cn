@@ -74,7 +74,7 @@ export default function Login() {
                 console.log("Error Status " + error.status);
 
                 if (error.status === 401) {
-                    setErrMsg("Email or Password is incorrect");
+                    setErrMsg("Username or Password is incorrect");
                 }
                 errRef.current.focus();
             });
