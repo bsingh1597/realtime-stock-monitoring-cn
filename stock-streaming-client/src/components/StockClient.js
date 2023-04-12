@@ -160,6 +160,8 @@ export default function StockClient() {
                     console.log("Error Status " + error.status);
                 });
         };
+        setTriggerStock("")
+        setTriggerPrice("")
     }
 
     const subscribeTkr = (stockName) => {
@@ -182,12 +184,13 @@ export default function StockClient() {
             <div className="ProfileNavBar">
                 <div className="search-container">
                     <div className="search-inner">
-                        <input
+                        <TextField
                             className="enter-tkr"
                             type="text"
+                            label="Enter Stock Name..."
                             value={searchTkr}
                             onChange={handleOnChagenSearchTkr} />
-                        <button className="search-tkr" onClick={() => subscribeTkr(searchTkr)}>Search</button>
+                        <Button className="search-tkr" variant="contained" onClick={() => subscribeTkr(searchTkr)}>Search</Button>
                     </div>
                     <div className="dropdown">
                         {stockOptions.filter(stock => {
@@ -231,10 +234,9 @@ export default function StockClient() {
                         variant="outlined"
                         value={triggerPrice}
                         onChange={(e) => setTriggerPrice(e.target.value)}
-                    >
-                    </TextField>
+                    />
                     <Button
-                        variant="outlined"
+                        variant="contained"
                         onClick={handleSetTriggerSubmit}>
                         Submit
                     </Button>
