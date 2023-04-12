@@ -9,7 +9,7 @@ export default function Home() {
             <div class="stock-client">
                 <StockClient />
             </div>
-            <div class="chat-box">
+            <div class="chat-client">
                 <ChatRoom/>
             </div>
 

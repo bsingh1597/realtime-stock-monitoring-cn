@@ -13,7 +13,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.uga.websockets.filter.JwtAuthFilter;
@@ -31,8 +30,8 @@ public class SecurityConfig {
 	@Autowired
 	private JwtTokenHelper jwtTokenHelper;
 	
-	//@Autowired(required = true)
-	//private AuthenticationEntryPoint authenticationEntryPoint;
+	@Autowired
+	private AuthenticationEntryPoint authenticationEntryPoint;
 	
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
@@ -51,7 +50,7 @@ public class SecurityConfig {
 		http.csrf().disable();
 		
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().exceptionHandling()
-		.authenticationEntryPoint(authenticationEntryPoint()).and()
+		.authenticationEntryPoint(authenticationEntryPoint).and()
 		.authorizeRequests((autz) -> autz.antMatchers("/login", "/register/**").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
 		.addFilterBefore(new JwtAuthFilter(userService, jwtTokenHelper),
@@ -60,12 +59,6 @@ public class SecurityConfig {
 		return http.build();
 	}
 	
-	@Bean
-    public AuthenticationEntryPoint authenticationEntryPoint() {
-        return new LoginUrlAuthenticationEntryPoint("/login");
-    }
-		
-
 }
 
 
