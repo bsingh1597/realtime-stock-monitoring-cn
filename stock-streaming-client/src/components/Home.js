@@ -1,5 +1,6 @@
 import StockClient from "./StockClient";
 import "../styles/Home.css"
+import ChatRoom from "./ChatRoom";
 
 export default function Home() {
 
@@ -9,7 +10,7 @@ export default function Home() {
                 <StockClient />
             </div>
             <div class="chat-box">
-
+                <ChatRoom/>
             </div>
 
         </div>

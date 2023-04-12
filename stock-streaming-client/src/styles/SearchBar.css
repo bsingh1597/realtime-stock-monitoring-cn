@@ -27,4 +27,14 @@ input {
 
 .search-inner {
   display: flex;
+  margin-bottom: 5px;
+}
+
+.search-inner input{
+  height: 10px;
+  width: 300px;
+}
+
+.search-inner button{
+  margin-left: 10px
 }

@@ -148,7 +148,7 @@ export default function StockClient() {
             setSubsTriggers([...subsTriggers, triggerStock])
             console.log("trigger val")
             axios
-                .post("http://localhost:8082/profile", {triggerStock: triggerStock, triggerPrice: triggerPrice})
+                .post("http://localhost:8082/profile", { triggerStock: triggerStock, triggerPrice: triggerPrice })
                 .then((res) => {
                     console.log(JSON.stringify(res.data));
                     //console.log(generalInfo);
@@ -181,66 +181,69 @@ export default function StockClient() {
 
     return (
         <>
-            <div className="ProfileNavBar">
-                <div className="search-container">
-                    <div className="search-inner">
-                        <TextField
-                            className="enter-tkr"
-                            type="text"
-                            label="Enter Stock Name..."
-                            value={searchTkr}
-                            onChange={handleOnChagenSearchTkr} />
-                        <Button className="search-tkr" variant="contained" onClick={() => subscribeTkr(searchTkr)}>Search</Button>
-                    </div>
-                    <div className="dropdown">
-                        {stockOptions.filter(stock => {
-                            const searchTerm = searchTkr.toLowerCase();
-                            const stockFullName = stock.toLocaleLowerCase();
-
-                            return searchTerm && stockFullName.includes(searchTerm)
-                        })
-                            .slice(0, 10)
-                            .map((stock) =>
-                            (<div
-                                className="dropdown-row"
-                                onClick={() => handleOnClickDropdown(stock)}>
-                                {stock}</div>
-                            ))}
-                    </div>
-                </div>
-                <div className="stock-table">
-                    <Table columns={columns}
-                        data={rowData} />
-                </div>
-                <div className="trigger-container">
-                    <FormControl style={{ height: "25px" }} variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                        <InputLabel id="select-label">Set Trigger</InputLabel>
-                        <Select
-                            labelId="select-label"
-                            value={triggerStock}
-                            onChange={(e) => setTriggerStock(e.target.value)}
-                        >
-                            {currentSubsTkr.map((stockname) => {
-                                return (
-                                    <MenuItem value={StockConstant.SYMBOL_MAP[stockname]}>{stockname}</MenuItem>
-                                )
-                            })}
-                        </Select>
-                    </FormControl>
+            <div className="search-container">
+                <div className="search-inner">
                     <TextField
-                        style={{ height: "25px" }}
-                        id="outlined-basic"
-                        label="Trigger Price..."
-                        variant="outlined"
-                        value={triggerPrice}
-                        onChange={(e) => setTriggerPrice(e.target.value)}
-                    />
-                    <Button
-                        variant="contained"
-                        onClick={handleSetTriggerSubmit}>
-                        Submit
-                    </Button>
+                        className="enter-tkr"
+                        type="text"
+                        label="Enter Stock Name..."
+                        value={searchTkr}
+                        onChange={handleOnChagenSearchTkr} />
+                    <Button className="search-tkr" variant="contained" onClick={() => subscribeTkr(searchTkr)}>Search</Button>
                 </div>
+                <div className="dropdown">
+                    {stockOptions.filter(stock => {
+                        const searchTerm = searchTkr.toLowerCase();
+                        const stockFullName = stock.toLocaleLowerCase();
+
+                        return searchTerm && stockFullName.includes(searchTerm)
+                    })
+                        .slice(0, 10)
+                        .map((stock) =>
+                        (<div
+                            className="dropdown-row"
+                            onClick={() => handleOnClickDropdown(stock)}>
+                            {stock}</div>
+                        ))}
+                </div>
+            </div>
+            <div className="stock-table">
+                <Table columns={columns}
+                    data={rowData} />
+            </div>
+            <div className="trigger-container">
+                <FormControl 
+                    // style={{ height: "25px" }} 
+                    variant="standard" 
+                    sx={{ m: 1, minWidth: 120 }}
+                    >
+                    <InputLabel style={{"margin-top": "0px"}} id="select-label">Set Trigger</InputLabel>
+                    <Select
+                        labelId="select-label"
+                        style={{"margin-top": "0px"}}
+                        value={triggerStock}
+                        onChange={(e) => setTriggerStock(e.target.value)}
+                    >
+                        {currentSubsTkr.map((stockname) => {
+                            return (
+                                <MenuItem value={StockConstant.SYMBOL_MAP[stockname]}>{stockname}</MenuItem>
+                            )
+                        })}
+                    </Select>
+                </FormControl>
+                <TextField
+                    style={{ height: "25px" }}
+                    id="outlined-basic"
+                    label="Trigger Price..."
+                    variant="outlined"
+                    value={triggerPrice}
+                    onChange={(e) => setTriggerPrice(e.target.value)}
+                />
+                <Button
+                    variant="contained"
+                    onClick={handleSetTriggerSubmit}>
+                    Submit
+                </Button>
             </div>
         </>
     );
