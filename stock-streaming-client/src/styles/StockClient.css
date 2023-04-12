@@ -1,0 +1,17 @@
+
+.trigger-container {
+    display: flex;
+    /* justify-content: space-between; */
+    /* align-items: center; */
+    padding: 15px;
+    /* height: 25px; */
+}
+
+.trigger-container button{
+    /* height: 20px; */
+    color: "blue";
+}
+
+.search-inner {
+    margin-bottom: 5px;
+}

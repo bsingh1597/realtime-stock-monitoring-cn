@@ -1,0 +1,13 @@
+.home-container {
+    padding: 5%;
+    height: 90%;
+    width: 80%;
+    display: flex;
+  }
+
+  .stock-client {
+    width: 70%;
+  }
+  .chat-box {
+    width: 30%;
+  }
