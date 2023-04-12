@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { over } from 'stompjs';
 import SockJS from 'sockjs-client';
-// import "../styles/ChatRoom.css"
+import "../styles/ChatRoom.css"
 
 var stompClient = null;
 const ChatRoom = () => {
@@ -87,24 +87,6 @@ const ChatRoom = () => {
         }
     }
 
-    // const sendPrivateValue = () => {
-    //     if (stompClient) {
-    //         let textMessage = {
-    //             senderName: userData.userName,
-    //             receiverName: tab,
-    //             message: userData.message,
-    //             status: "MESSAGE"
-    //         };
-
-    //         if (userData.userName !== tab) {
-    //             privateChats.get(tab).push(textMessage);
-    //             setPrivateChats(new Map(privateChats));
-    //         }
-    //         stompClient.send("/app/privateMessage", {}, JSON.stringify(textMessage));
-    //         setUserData({ ...userData, "message": "" });
-    //     }
-    // }
-
     const handleUserName = (event) => {
         const { value } = event.target;
         setUserData({ ...userData, "userName": value });
@@ -115,8 +97,7 @@ const ChatRoom = () => {
     }
     return (
         <div className="container">
-            {userData.connected ?
-                <div className="chat-box">
+            <div className="chat-box">
                     <div className="member-list">
                         <ul>
                             <li onClick={() => { setTab("CHATROOM") }} className={`member ${tab === "CHATROOM" && "active"}`}>Public Chat</li>
@@ -158,20 +139,6 @@ const ChatRoom = () => {
                         </div> */}
                     </div>}
                 </div>
-                :
-                <div className="register">
-                    <input
-                        id="user-name"
-                        placeholder="Enter your name"
-                        name="userName"
-                        value={userData.userName}
-                        onChange={handleUserName}
-                        margin="normal"
-                    />
-                    <button type="button" onClick={registerUser}>
-                        Register
-                    </button>
-                </div>}
         </div>
     )
 }
