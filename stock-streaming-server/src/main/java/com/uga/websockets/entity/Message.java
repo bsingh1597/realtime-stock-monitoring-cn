@@ -42,6 +42,12 @@ public class Message {
 		this.status = status;
 	}
 
+	@Override
+	public String toString() {
+		return "Message [senderName=" + senderName + ", receiverName=" + receiverName + ", message=" + message
+				+ ", date=" + date + ", status=" + status + "]";
+	}
+
 	private String senderName;
 	private String receiverName;
 	private String message;

@@ -1,52 +1,86 @@
 package com.uga.websockets.config;
 
-import java.lang.reflect.Type;
+import java.io.IOException;
 import java.net.URI;
-import java.nio.ByteBuffer;
-
-import jakarta.websocket.ClientEndpoint;
-import jakarta.websocket.CloseReason;
-import jakarta.websocket.ContainerProvider;
-import jakarta.websocket.MessageHandler;
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
-import jakarta.websocket.Session;
-import jakarta.websocket.WebSocketContainer;
-
-import org.springframework.lang.Nullable;
-import org.springframework.messaging.simp.stomp.StompCommand;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.messaging.simp.stomp.StompSessionHandler;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.socket.client.WebSocketClient;
-import org.springframework.web.socket.client.standard.StandardWebSocketClient;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
-
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.HashMap;
+import java.util.Map;
 
+import javax.websocket.CloseReason;
+import javax.websocket.ContainerProvider;
+import javax.websocket.DeploymentException;
+import javax.websocket.OnClose;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.WebSocketContainer;
 
-//@ClientEndpoint
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.client.RestTemplate;
+
+import com.uga.websockets.entity.Message;
+
+//@Controller
 //public class WebSocketsTrigger {
 //
 //	private Session userSession = null;
-//	private MessageHandler messageHandler;
+//	@Autowired
+//	SimpMessagingTemplate simpMessagingTemplate;
 //
-//	public WebSocketsTrigger(URI endpointURI) {
-//		try {
-//			WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-//			container.connectToServer(this, endpointURI);
-//		} catch (Exception e) {
-//			throw new RuntimeException(e);
-//		}
-//	}
+//	private Session session;
 //
+//	public void WebSocketsTrigger() throws IOException, URISyntaxException, DeploymentException {
+//		// WebSocketClient(URI("wss://ws.finnhub.io?token=cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0"));
+//
+//		URI uri = new URI("wss://ws.finnhub.io?token=<your_api_key>");
+//		WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+//		container.connectToServer(this, uri);
+//		this.session.getBasicRemote().sendText("{\"type\":\"subscribe\",\"symbol\":\"" + "AAPL" + "\"}");
+//			String stockSymbol = "BINANCE:BTCUSDT"; // set the stock symbol here
+//			String ApiKey = "cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0";
+//			WebSocketClient client = new StandardWebSocketClient();
+//			WebSocketStompClient stompClient = new WebSocketStompClient(client);
+//			StompSessionHandler handler = new StompSessionHandler() {
+
+//				public void handleFrame(StompHeaders headers, @Nullable Object payload) {
+//					// TODO Auto-generated method stub
+//
+//				}
+//
+//				public Type getPayloadType(StompHeaders headers) {
+//					// TODO Auto-generated method stub
+//					return null;
+//				}
+//
+//				public void handleTransportError(StompSession session, Throwable exception) {
+//					// TODO Auto-generated method stub
+//
+//				}
+//
+//				public void handleException(StompSession session, @Nullable StompCommand command, StompHeaders headers,
+//						byte[] payload, Throwable exception) {
+//			CompletableFuture<StompSession> sessionAsync = stompClient
+//					.connectAsync("wss://ws.finnhub.io?token=cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0", handler, "");
+//			StompSession session = sessionAsync.get();
+//			session.subscribe("", handler);
+
+//			while (true) {
+//				session.send("", "");
+//				Thread.sleep(10000);
+//			}
+	//}
+
 //	/**
 //	 * Callback hook for Connection open events.
 //	 *
@@ -77,125 +111,72 @@ import java.util.HashMap;
 //	 * @param message The text message
 //	 */
 //	@OnMessage
-//	public void onMessage(String message) {
-//		if (this.messageHandler != null) {
-//			this.messageHandler.handleMessage(message);
-//		}
-//	}
+//	public void onMessage(String message) throws ParseException, org.json.simple.parser.ParseException {
+//		org.json.simple.parser.JSONParser parser = new org.json.simple.parser.JSONParser();
+//		JSONObject json = (JSONObject) parser.parse(message);
 //
-//	@OnMessage
-//	public void onMessage(ByteBuffer bytes) {
-//		System.out.println("Handle byte buffer");
-//	}
-//
-//	/**
-//	 * register message handler
-//	 *
-//	 * @param msgHandler
-//	 */
-//	public void addMessageHandler(MessageHandler msgHandler) {
-//		this.messageHandler = msgHandler;
-//	}
-//
-//	/**
-//	 * Send a message.
-//	 *
-//	 * @param message
-//	 */
-//	public void sendMessage(String message) {
-//		this.userSession.getAsyncRemote().sendText(message);
-//	}
-
-//	public static interface MessageHandler {
-//
-//		public void handleMessage(String message);
-//	}
-//	public void WebsocketTrigger() {
-//		try {
-//			// WebSocketClient clientEndPoint = new
-//			// WebSocketClient(URI("wss://ws.finnhub.io?token=cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0"));
-//
-//			WebSocketClient client = new StandardWebSocketClient();
-//			WebSocketStompClient stompClinet = new WebSocketStompClient(client);
-//			StompSessionHandler handler = new StompSessionHandler() {
-//
-//				public void handleFrame(StompHeaders headers, @Nullable Object payload) {
-//					// TODO Auto-generated method stub
-//
-//				}
-//
-//				public Type getPayloadType(StompHeaders headers) {
-//					// TODO Auto-generated method stub
-//					return null;
-//				}
-//
-//				public void handleTransportError(StompSession session, Throwable exception) {
-//					// TODO Auto-generated method stub
-//
-//				}
-//
-//				public void handleException(StompSession session, @Nullable StompCommand command, StompHeaders headers,
-//						byte[] payload, Throwable exception) {
-//					// TODO Auto-generated method stub
-//
-//				}
-//
-//				public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-//					// TODO Auto-generated method stub
-//
-//				}
-//			};
-//			CompletableFuture<StompSession> sessionAsync = stompClinet
-//					.connectAsync("wss://ws.finnhub.io?token=cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0", handler, "");
-//			StompSession session = sessionAsync.get();
-//			session.subscribe("", handler);
-//
-//			while (true) {
-//				session.send("", "");
-//				Thread.sleep(10000);
+//		if (json.containsKey("data")) {
+//			JSONArray data = (JSONArray) json.get("data");
+//			JSONObject quote = (JSONObject) data.get(0);
+//			Double currentPrice = (Double) quote.get("p");
+//			System.out.println("Current Price: " + currentPrice);
+//			Map<String, Object> stockquote = quote;
+//			if (currentPrice > 100) {
+//				Message alertMessage = new Message();
+//				alertMessage.setMessage("Alert triggered");
+//				sendAlert(alertMessage);
 //			}
-//			Map<String, Object> quote = restTemplate.getForObject(apiUrl, HashMap.class);
-//	        double stockPrice = (double) quote.get("c");
-//	        if (stockPrice > alertThreshold) {
-//	            sendAlert();
-//	        }
-//	    }
-	
-//	    private void sendAlert() {
-//	        //add code to send alert notification here
-//	        System.out.println(alertMessage);
-//	    }
-//		} catch (InterruptedException ex) {
-//			System.err.println("InterruptedException exception: " + ex.getMessage());
-//		} catch (ExecutionException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
+//
 //		}
+//	}
+//
+//	@MessageMapping("/alert")
+//	@SendTo("/chatroom/alert")
+//	public Message sendAlert(@Payload Message message) {
+//
+//		Logger logger = LoggerFactory.getLogger(WebSocketsTrigger.class);
+//		logger.info("Inside SendAlert" + message);
+//		simpMessagingTemplate.convertAndSend("/chatroom/alert", message);
+//		return message;
 //	}
 //}
-		
 
-@Component
+@Controller
 public class WebSocketsTrigger {
+	
+	Logger logger = LoggerFactory.getLogger(WebSocketsTrigger.class);
+	
+	@Autowired
+	SimpMessagingTemplate simpMessagingTemplate;
 
-    private double alertThreshold = 100.0; //set the alert threshold here
-    private String stockSymbol = "BINANCE:BTCUSDT"; //set the stock symbol here
-    private String finnhubApiKey = "cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0"; //set your Finnhub API key here
-    private String alertMessage = "Stock price of " + stockSymbol + " has crossed the alert threshold of " + alertThreshold;
-    @Scheduled(fixedDelay = 60000) //run the code every minute
-    
-    public void checkStockPrice() {
-        RestTemplate restTemplate = new RestTemplate();
-        String apiUrl = "https://finnhub.io/api/v1/quote?symbol=" + stockSymbol + "&token=" + finnhubApiKey;
-        Map<String, Object> quote = restTemplate.getForObject(apiUrl, HashMap.class);
-        double stockPrice = (double) quote.get("c");
-        if (stockPrice > alertThreshold) {
-            sendAlert();
-        }
-    }
+	private double alertThreshold = 30376.0; // set the alert threshold here
+	private String stockSymbol = "BINANCE:BTCUSDT"; // set the stock symbol here
+	private String finnhubApiKey = "cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0"; // set your Finnhub API key here
+	private String alertMessage = "Stock price of " + stockSymbol + " has crossed the alert threshold of "
+			+ alertThreshold;
 
-    private void sendAlert() {
-        //add code to send alert notification here
-        System.out.println(alertMessage);
-    }
+	@Scheduled(fixedDelay = 6000) // run the code every minute
+	public void checkStockPrice() {
+		logger.info("Inside checkStockPrice");
+		RestTemplate restTemplate = new RestTemplate();
+		String apiUrl = "https://finnhub.io/api/v1/quote?symbol=" + stockSymbol + "&token=" + finnhubApiKey;
+		Map<String, Object> quote = restTemplate.getForObject(apiUrl, HashMap.class);
+		logger.info("Map for quote" + quote);
+		
+		double stockPrice = (double) quote.get("c");
+		logger.info("Stock Price" + stockPrice);
+		if (stockPrice < alertThreshold) {
+			Message alertMessage = new Message();
+			alertMessage.setMessage(this.alertMessage);
+			sendAlert(alertMessage);
+		}
+	}
+
+	@MessageMapping("/alert")
+	@SendTo("/chatroom/alert")
+	public Message sendAlert(@Payload Message message) {
+		logger.info("Inside SendAlert" + message);
+		simpMessagingTemplate.convertAndSend("/chatroom/alert", message);
+		return message;
+	}
 }

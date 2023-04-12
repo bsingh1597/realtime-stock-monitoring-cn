@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.client.RestTemplate;
 
+import com.uga.websockets.entity.AlertMessage;
 import com.uga.websockets.entity.Message;
 
 @Controller
@@ -31,5 +32,4 @@ public class ChatController {
 		simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", message);
 		return message;
 	}
-
 }
