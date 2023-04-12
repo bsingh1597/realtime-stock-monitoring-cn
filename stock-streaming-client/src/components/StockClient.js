@@ -1,5 +1,6 @@
 import React, { ReactDOM, useEffect, useState, useRef } from "react";
 import { w3cwebsocket as WebSocket } from "websocket";
+import axios from "axios";
 import { format } from 'react-string-format';
 import { InputLabel, Button, Select, MenuItem, FormControl, TextField } from "@mui/material";
 import Table from "./Table";
@@ -22,6 +23,7 @@ export default function StockClient() {
     const [showTriggerBox, setShowTriggerBox] = useState(false)
     const [triggerPrice, setTriggerPrice] = useState("")
     const [triggerStock, setTriggerStock] = useState("")
+    const [subsTriggers, setSubsTriggers] = useState([])
 
     const intialStocks = ['Amazon', 'Bitcoin USD']
 
@@ -140,11 +142,24 @@ export default function StockClient() {
     }
 
     const handleSetTriggerSubmit = () => {
-        console.log("trigger price: "+ triggerPrice)
-        console.log("trigger stock: "+ triggerStock)
-        if(triggerPrice && triggerStock) {
+        console.log("trigger price: " + triggerPrice)
+        console.log("trigger stock: " + triggerStock)
+        if (triggerPrice && triggerStock) {
+            setSubsTriggers([...subsTriggers, triggerStock])
             console.log("trigger val")
-        }
+            axios
+                .post("http://localhost:8082/profile", {triggerStock: triggerStock, triggerPrice: triggerPrice})
+                .then((res) => {
+                    console.log(JSON.stringify(res.data));
+                    //console.log(generalInfo);
+                    console.log("HIIIII");
+                })
+                .catch((e) => {
+                    console.log("Error in authentication " + JSON.stringify(e));
+                    const error = JSON.parse(JSON.stringify(e));
+                    console.log("Error Status " + error.status);
+                });
+        };
     }
 
     const subscribeTkr = (stockName) => {
@@ -194,31 +209,31 @@ export default function StockClient() {
                     <Table columns={columns}
                         data={rowData} />
                 </div>
-                <div className="trigger-cell">
-                <FormControl style={{height:"25px"}} variant="standard" sx={{ m: 1, minWidth: 120 }}>
-                    <InputLabel id="select-label">Set Trigger</InputLabel>
-                    <Select
-                        labelId="select-label"
-                        value={triggerStock}
-                        onChange={(e) => setTriggerStock(e.target.value)}
+                <div className="trigger-container">
+                    <FormControl style={{ height: "25px" }} variant="standard" sx={{ m: 1, minWidth: 120 }}>
+                        <InputLabel id="select-label">Set Trigger</InputLabel>
+                        <Select
+                            labelId="select-label"
+                            value={triggerStock}
+                            onChange={(e) => setTriggerStock(e.target.value)}
+                        >
+                            {currentSubsTkr.map((stockname) => {
+                                return (
+                                    <MenuItem value={StockConstant.SYMBOL_MAP[stockname]}>{stockname}</MenuItem>
+                                )
+                            })}
+                        </Select>
+                    </FormControl>
+                    <TextField
+                        style={{ height: "25px" }}
+                        id="outlined-basic"
+                        label="Trigger Price..."
+                        variant="outlined"
+                        value={triggerPrice}
+                        onChange={(e) => setTriggerPrice(e.target.value)}
                     >
-                        {currentSubsTkr.map((stockname) => {
-                            return(
-                             <MenuItem value={StockConstant.SYMBOL_MAP[stockname]}>{stockname}</MenuItem>
-                        )
-                        })}
-                    </Select>
-                </FormControl>
-                <TextField 
-                    style={{height:"25px"}}
-                    id="outlined-basic" 
-                    label="Trigger Price..." 
-                    variant="outlined"
-                    value={triggerPrice}
-                    onChange={(e) => setTriggerPrice(e.target.value)}
-                    >
-                </TextField>
-                <Button
+                    </TextField>
+                    <Button
                         variant="outlined"
                         onClick={handleSetTriggerSubmit}>
                         Submit

@@ -1,5 +1,5 @@
 
-.trigger-cell {
+.trigger-container {
     display: flex;
     /* justify-content: space-between; */
     /* align-items: center; */
@@ -7,6 +7,7 @@
     /* height: 25px; */
 }
 
-.trigger-cell button{
+.trigger-container button{
     /* height: 20px; */
+    color: "blue";
 }
