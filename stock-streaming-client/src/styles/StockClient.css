@@ -8,10 +8,11 @@
 }
 
 .trigger-container button{
-    /* height: 20px; */
-    color: "blue";
+    margin-left: 10px
 }
 
-.search-inner {
-    margin-bottom: 5px;
+.trigger-container input{
+    height: 10px;
+    width: 150px;
+    margin-right: 10px;
 }
