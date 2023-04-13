@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { over } from 'stompjs';
 import SockJS from 'sockjs-client';
 import "../styles/ChatRoom.css"
+import { Button } from "@mui/material";
+import SendIcon from '@mui/icons-material/Send';
 
 var stompClient = null;
 const ChatRoom = () => {
@@ -19,8 +21,8 @@ const ChatRoom = () => {
     });
     useEffect(() => {
 
-        console.log("logged in user: "+sessionStorage.getItem("user"))
-        setUserData({...userData, userName: "test"})
+        console.log("logged in user: " + sessionStorage.getItem("user"))
+        setUserData({ ...userData, userName: "test" })
         connect();
     }, []);
 
@@ -106,8 +108,8 @@ const ChatRoom = () => {
     return (
         <div className="container">
             {
-            // userData.connected &&
-                <div className="chat-box">
+                // userData.connected &&
+                <div className="chat-box" >
                     <div className="chat-content">
                         <h4>Global Chat</h4>
                         <ul className="chat-messages">
@@ -129,7 +131,10 @@ const ChatRoom = () => {
 
                         <div className="send-message">
                             <input type="text" className="input-message" placeholder="Enter message" value={userData.message} onChange={handleMessage} />
-                            <button type="button" className="send-button" onClick={sendValue}>Send</button>
+                            {/* <button type="button" className="send-button" onClick={sendValue}>Send</button> */}
+                            <Button variant="contained" endIcon={<SendIcon />} onClick={sendValue}>
+                                Send
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -147,7 +152,7 @@ const ChatRoom = () => {
                 //         Register
                 //     </button>
                 // </div>
-                }
+            }
         </div>
     )
 }
