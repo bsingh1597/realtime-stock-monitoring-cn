@@ -220,7 +220,7 @@ export default function StockClient() {
                     <InputLabel style={{"margin-top": "0px"}} id="select-label">Set Trigger</InputLabel>
                     <Select
                         labelId="select-label"
-                        style={{"margin-top": "0px"}}
+                        style={{"margin-top": "15px"}}
                         value={triggerStock}
                         onChange={(e) => setTriggerStock(e.target.value)}
                     >
@@ -232,7 +232,7 @@ export default function StockClient() {
                     </Select>
                 </FormControl>
                 <TextField
-                    style={{ height: "25px" }}
+                    style={{ "margin-top": "0px", "height": "1px"}}
                     id="outlined-basic"
                     label="Trigger Price..."
                     variant="outlined"
