@@ -21,7 +21,7 @@ public class RestAuthEntryPoint implements AuthenticationEntryPoint {
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException, ServletException {
 		
-		logger.error("The request is Unauthorized");
+		logger.error("The request is Unauthorized path: {}", request.getPathInfo());
 		
 		response.sendError(HttpServletResponse.SC_UNAUTHORIZED,authException.getMessage());
 		
