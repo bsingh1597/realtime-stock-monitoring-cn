@@ -10,6 +10,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import com.uga.websockets.entity.Message;
+import com.uga.websockets.entity.Status;
 
 @Controller
 public class ChatController {
@@ -26,11 +27,12 @@ public class ChatController {
 		return message;
 	}
 
-	// @MessageMapping("/privateMessage")
-	// public Message receivePrivateMessage(@Payload Message message) {
-	// 	logger.info("Inside receivePrivateMessage message: {}", message);
-	// 	simpMessagingTemplate.convertAndSendToUser(message.getReceiverName(), "/private", message);
-	// 	return message;
-	// }
-
+	@MessageMapping("/logout")
+	@SendTo("/chatroom/public")
+	public Message userLogout(@Payload Message message) {
+		logger.info("Inside receivePublicMessgae message: {}", message);
+		message.setMessage("Left the Chat room");
+		message.setStatus(Status.LEFT);
+		return message;
+	}
 }
