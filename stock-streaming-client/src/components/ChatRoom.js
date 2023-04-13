@@ -15,18 +15,14 @@ const ChatRoom = () => {
         message: ''
     })
     const [userData, setUserData] = useState({
-        userName: '',
+        userName: sessionStorage.getItem("user"),
         receivername: '',
         connected: false,
-        message: ''
-    });
+        message: ''});
     useEffect(() => {
-
         console.log("connected in user chatroom: " + sessionStorage.getItem("user"))
         console.log("logged in user token chatroom: " + sessionStorage.getItem("jwtToken"))
-        const username = sessionStorage.getItem("user")
-        const userData1 = {"userName": "test", connected: false}
-        setUserData(userData1)
+        // setUserData({...userData, userName: sessionStorage.getItem("user")})
         connect();
     }, []);
 
@@ -44,7 +40,7 @@ const ChatRoom = () => {
 
     const onConnected = () => {
         console.log("On Connected")
-        setUserData({ ...userData, "connected": true });
+        setUserData({ ...userData, connected: true });
         setAlertMessageData({ ...alertMessages })
         console.log("Alertmin onConnected" + alertMessages.message);
         console.log("OnConnected: " + JSON.stringify(userData));
@@ -56,7 +52,7 @@ const ChatRoom = () => {
     const userJoin = () => {
         console.log("OnConnected2: " + JSON.stringify(userData));
         let textMessage = {
-            senderName: userData.userName,
+            senderName: sessionStorage.getItem("user"),
             status: "JOIN"
         };
         stompClient.send("/app/message", {}, JSON.stringify(textMessage));
@@ -71,6 +67,7 @@ const ChatRoom = () => {
                 setPublicChats([...publicChats]);
                 break;
             case "JOIN":
+                console.log("Join1 message: ", JSON.stringify(userData))
                 if (reqData.senderName !== userData.userName) {
                     reqData.message = "Joined the Chatroom";
                     publicChats.push(reqData);
@@ -96,6 +93,7 @@ const ChatRoom = () => {
         // setAlertMessageData({...alertMessages, "message": value})
     }
     const sendValue = () => {
+        console.log("Inside send message")
         if (stompClient) {
             let textMessage = {
                 senderName: userData.userName,
@@ -112,13 +110,10 @@ const ChatRoom = () => {
         setUserData({ ...userData, "userName": value });
     }
 
-    // const registerUser = () => {
-    //     connect();
-    // }
     return (
         <div className="container">
             {
-                // userData.connected &&
+                userData.connected &&
                 <div className="chat-box" >
                     <div className="chat-content">
                         <h4>Global Chat</h4>
@@ -148,20 +143,6 @@ const ChatRoom = () => {
                         </div>
                     </div>
                 </div>
-                // :
-                // <div className="register">
-                //     <input
-                //         id="user-name"
-                //         placeholder="Enter your name"
-                //         name="userName"
-                //         value={userData.userName}
-                //         onChange={handleUserName}
-                //         margin="normal"
-                //     />
-                //     <button type="button" onClick={registerUser}>
-                //         Register
-                //     </button>
-                // </div>
             }
         </div>
     )
