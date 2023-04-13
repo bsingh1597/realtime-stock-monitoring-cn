@@ -20,7 +20,6 @@ export default function StockClient() {
     const [rowData, setRowData] = useState([])
     const [searchTkr, setSearchTkr] = useState("")
     const [currentSubsTkr, setCurrentSubsTkr] = useState([])
-    const [showTriggerBox, setShowTriggerBox] = useState(false)
     const [triggerPrice, setTriggerPrice] = useState("")
     const [triggerStock, setTriggerStock] = useState("")
     const [subsTriggers, setSubsTriggers] = useState([])
@@ -67,6 +66,7 @@ export default function StockClient() {
 
     const handleSetTrigger = (symbol) => {
         console.log("Inside handleSetTrigger for symbol: " + symbol)
+        // TODO - code to call the backend api for triggers
 
     }
 
@@ -193,10 +193,9 @@ export default function StockClient() {
                 </div>
                 <div className="dropdown">
                     {stockOptions.filter(stock => {
-                        const searchTerm = searchTkr.toLowerCase();
-                        const stockFullName = stock.toLocaleLowerCase();
-
-                        return searchTerm && stockFullName.includes(searchTerm)
+                        return searchTkr &&
+                            stock.toLocaleLowerCase().includes(searchTkr.toLowerCase()) &&  // Checks is the chars passed are included in a stock
+                            currentSubsTkr.indexOf(stock) === -1  // Restricts showing the stock name in dropdown which is already subscribed
                     })
                         .slice(0, 10)
                         .map((stock) =>
@@ -212,12 +211,12 @@ export default function StockClient() {
                     data={rowData} />
             </div>
             <div className="trigger-container">
-                <FormControl 
+                <FormControl
                     // style={{ height: "25px" }} 
-                    variant="standard" 
+                    variant="standard"
                     sx={{ m: 1, minWidth: 120 }}
-                    >
-                    <InputLabel style={{"margin-top": "0px"}} id="select-label">Set Trigger</InputLabel>
+                >
+                    <InputLabel style={{ "margin-top": "0px" }} id="select-label">Set Trigger</InputLabel>
                     <Select
                         labelId="select-label"
                         style={{"margin-top": "15px"}}
