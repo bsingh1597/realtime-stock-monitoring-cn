@@ -4,6 +4,7 @@ import SockJS from 'sockjs-client';
 import "../styles/ChatRoom.css"
 import { Button } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
+import { async } from 'q';
 
 var stompClient = null;
 const ChatRoom = () => {
@@ -21,29 +22,39 @@ const ChatRoom = () => {
     });
     useEffect(() => {
 
-        console.log("logged in user: " + sessionStorage.getItem("user"))
-        setUserData({ ...userData, userName: "test" })
+        console.log("connected in user chatroom: " + sessionStorage.getItem("user"))
+        console.log("logged in user token chatroom: " + sessionStorage.getItem("jwtToken"))
+        const username = sessionStorage.getItem("user")
+        const userData1 = {"userName": "test", connected: false}
+        setUserData(userData1)
         connect();
     }, []);
 
     const connect = () => {
         console.log("Inside connect function")
-        let Sock = new SockJS('http://localhost:8082/webSocket');
+        const jwtToken = sessionStorage.getItem("jwtToken")
+        let Sock = new SockJS('http://localhost:8082/webSocket'
+        // , null, {
+        //     headers: {'Authorization': 'Bearer '+ jwtToken}}
+            );
         stompClient = over(Sock);
         stompClient.connect({}, onConnected, onError);
+        console.log("After setting the connection")
     }
 
     const onConnected = () => {
+        console.log("On Connected")
         setUserData({ ...userData, "connected": true });
         setAlertMessageData({ ...alertMessages })
         console.log("Alertmin onConnected" + alertMessages.message);
-        console.log("OnConnected: " + userData.userName);
+        console.log("OnConnected: " + JSON.stringify(userData));
         stompClient.subscribe('/chatroom/alert', onAlertMessageReceived);
         stompClient.subscribe('/chatroom/public', onMessageReceived);
         userJoin();
     }
 
     const userJoin = () => {
+        console.log("OnConnected2: " + JSON.stringify(userData));
         let textMessage = {
             senderName: userData.userName,
             status: "JOIN"
@@ -65,7 +76,6 @@ const ChatRoom = () => {
                     publicChats.push(reqData);
                     setPublicChats([...publicChats]);
                 }
-
                 break;
         }
     }

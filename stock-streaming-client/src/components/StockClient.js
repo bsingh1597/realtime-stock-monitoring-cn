@@ -86,7 +86,7 @@ export default function StockClient() {
         setCurrentSubsTkr(initialSubsStocks)
 
         wsClient.onopen = () => {
-            console.log('WebSocket connection established.');
+            console.log('WebSocket connection established with finhub.');
             intialStocks.map(stockTkr => {
                 const tkr = StockConstant.SYMBOL_MAP[stockTkr]
                 wsClient.send(
