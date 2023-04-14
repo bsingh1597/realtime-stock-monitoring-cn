@@ -17,6 +17,7 @@
     width: 100%;
     /*margin-left: 12%;*/
     border-color: #eee;
+    top: 50%;
 }
 
 .register {
@@ -29,16 +30,16 @@
     flex-direction: row;
 }
 
-.container {
+/* .container { */
     /* position: relative;  */
     /* float: right; */
-    left: 65%;
+    /* left: 65%;
     margin-left: 10px;
     position: relative;
     top: 40%;
     overflow: hidden;
     border: 1px solid #7e74d7;
-}
+} */
 
 .register input {
     padding: 10px;
@@ -53,12 +54,17 @@
     width: 600%;
     margin-left: auto;
     margin-right: 60px;
+    height: auto;
+    position: relative;
+    bottom: 75px;
 }
 
 .chat-content h4 {
     font-family: Arial, Helvetica, sans-serif;
     font-style: oblique;
     color: aliceblue;
+    padding-top: 1%;
+    padding-bottom: 1%;
 }
 
 .chat-messages {
@@ -66,6 +72,8 @@
     border: 1px solid #000;
     overflow-y: scroll;
     background-color: aliceblue;
+    font-size: small;
+    font-family: cursive;
 }
 
 .send-message {

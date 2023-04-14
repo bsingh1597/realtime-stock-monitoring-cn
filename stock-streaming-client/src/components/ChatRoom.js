@@ -5,7 +5,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/ChatRoom.css"
 import { Button } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
-import { async } from 'q';
 
 var stompClient = null;
 const ChatRoom = () => {
@@ -144,13 +143,13 @@ const ChatRoom = () => {
     }
 
     return (
-        <div className="container">
+        <div>
             {
                 userData.connected &&
                 <div className="chat-box" >
                     <div className="chat-content">
                         <h4>Global Chat</h4>
-                        <button onClick={handleUserLogout}> Logout </button>
+                        <Button style={{ "fontSize": "12px" }} variant='outlined' color='error' onClick={handleUserLogout}> Logout </Button>
                         <ul className="chat-messages">
                             {publicChats.map((chat, index) => (
                                 <ul className={`message ${chat.senderName === userData.userName && "self"}`} key={index}>
