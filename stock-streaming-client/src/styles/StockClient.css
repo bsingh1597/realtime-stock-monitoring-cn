@@ -4,15 +4,14 @@
     /* justify-content: space-between; */
     /* align-items: center; */
     padding: 15px;
-    /* height: 25px; */
+    height: 30px;
 }
 
 .trigger-container button{
-    margin-left: 10px
+    height: 52px;
+    color: "blue";
 }
 
-.trigger-container input{
-    height: 10px;
-    width: 150px;
-    margin-right: 10px;
+.search-inner {
+    margin-bottom: 5px;
 }

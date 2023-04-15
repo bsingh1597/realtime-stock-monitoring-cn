@@ -1,28 +1,40 @@
-import React, { ReactDOM, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { w3cwebsocket as WebSocket } from "websocket";
 import axios from "axios";
 import { format } from 'react-string-format';
-import { InputLabel, Button, Select, MenuItem, FormControl, TextField } from "@mui/material";
+import { InputLabel, Button, Select, MenuItem, FormControl, TextField, Alert } from "@mui/material";
 import Table from "./Table";
 import "../styles/SearchBar.css"
 import "../styles/StockClient.css"
 import * as StockConstant from "../common/StockNames"
+import { over } from 'stompjs';
+import SockJS from 'sockjs-client';
 
 
 const WS_URL = StockConstant.FINHUB_WS_API + StockConstant.FINHUB_TOKEN
 
 const wsClient = new WebSocket(WS_URL)
 
+// const triggerClient = new WebSocket(WS_URL)
+
+var stompClient1 = null;
 export default function StockClient() {
 
+
     const stockOptions = StockConstant.STOCK_LIST
+    const triggerThresholdTypes = StockConstant.TRIGGER_TYPES
     // Use state hook variable to manage the changing state of variable
+    const [goodMsg, setGoodMsg] = useState("");
     const [rowData, setRowData] = useState([])
     const [searchTkr, setSearchTkr] = useState("")
     const [currentSubsTkr, setCurrentSubsTkr] = useState([])
     const [triggerPrice, setTriggerPrice] = useState("")
     const [triggerStock, setTriggerStock] = useState("")
     const [subsTriggers, setSubsTriggers] = useState([])
+    const [triggerThresholdType, setTriggerThresholdType] = useState("")
+    const [triggerMessage, setTriggerMessage] = useState("")
+
+    const triggerMessageTemplate = '{0} for Stock {1} at price {2}';
 
     const intialStocks = ['Amazon', 'Bitcoin USD']
 
@@ -86,7 +98,7 @@ export default function StockClient() {
         setCurrentSubsTkr(initialSubsStocks)
 
         wsClient.onopen = () => {
-            console.log('WebSocket connection established.');
+            console.log('WebSocket connection established with finhub.');
             intialStocks.map(stockTkr => {
                 const tkr = StockConstant.SYMBOL_MAP[stockTkr]
                 wsClient.send(
@@ -96,25 +108,55 @@ export default function StockClient() {
                 // "{"type":"subscribe","symbol":"BINANCE:BTCUSDT"}"
             )
         };
-
+        connect()
     }, [])
 
+    const connect = () => {
+        console.log("Inside connect function StockClient")
+        const jwtToken = sessionStorage.getItem("jwtToken")
+        let Sock = new SockJS('http://localhost:8082/webSocket'
+            // , null, {
+            //     headers: {'Authorization': 'Bearer '+ jwtToken}}
+        );
+        stompClient1 = over(Sock);
+        stompClient1.connect({}, onConnected, onError);
+        console.log("After setting the connection")
+    }
+
+    const onConnected = () => {
+        console.log("On Connected StockClient")
+        stompClient1.subscribe('/trigger/alert', onAlertMessageReceived);
+    }
+
+    const onAlertMessageReceived = (res) => {
+        console.log("onAlertMessageReceived")
+        let resData = JSON.parse(res.body);
+        console.log("ALERTTT!! StockClient", JSON.stringify(res.body));
+
+        console.log(format(triggerMessageTemplate, resData.triggerType, resData.symbol, resData.price))
+        setTriggerMessage(format(triggerMessageTemplate, resData.triggerType, resData.symbol, resData.price));
+    }
+
+    const onError = (err) => {
+        console.log("Error from our server: ", JSON.stringify(err))
+    }
+
     wsClient.onmessage = (res) => {
-        console.log('On message' + JSON.stringify(res.data));
+        // console.log('On message' + JSON.stringify(res.data));
         const response = JSON.parse(res.data)
         if (response.data) {
-            console.log("it is in")
+            // console.log("it is in")
             updateStockPrice(res.data)
         }
 
     };
 
     const updateStockPrice = (data) => {
-        console.log('On message 1' + JSON.parse(data));
+        // console.log('On message 1' + JSON.parse(data));
         const stockRes = JSON.parse(data)
-        console.log("First data in the array: " + JSON.stringify(stockRes.data[0].s))
+        // console.log("First data in the array: " + JSON.stringify(stockRes.data[0].s))
         setRowData(rowData.map(item => {
-            console.log("Iteam checking is: " + item.symbol)
+            // console.log("Iteam checking is: " + item.symbol)
 
             if (item.symbol === stockRes.data[0].s && item.price !== stockRes.data[0].p) {
                 const latestPrice = stockRes.data[0].p
@@ -144,24 +186,24 @@ export default function StockClient() {
     const handleSetTriggerSubmit = () => {
         console.log("trigger price: " + triggerPrice)
         console.log("trigger stock: " + triggerStock)
+        console.log("trigger type: " + triggerThresholdType)
         if (triggerPrice && triggerStock) {
             setSubsTriggers([...subsTriggers, triggerStock])
-            console.log("trigger val")
             axios
-                .post("http://localhost:8082/profile", { triggerStock: triggerStock, triggerPrice: triggerPrice })
+                .post("http://localhost:8082/subscribe", { symbol: triggerStock, price: triggerPrice, triggerType: triggerThresholdType })
                 .then((res) => {
                     console.log(JSON.stringify(res.data));
-                    //console.log(generalInfo);
-                    console.log("HIIIII");
+                    setGoodMsg(res.data)
+                    console.log("Trigger is set up");
                 })
                 .catch((e) => {
-                    console.log("Error in authentication " + JSON.stringify(e));
-                    const error = JSON.parse(JSON.stringify(e));
-                    console.log("Error Status " + error.status);
+                    console.log("Error in Subscribe call " + JSON.stringify(e));
+                    // setErrMsg()
                 });
         };
         setTriggerStock("")
         setTriggerPrice("")
+        setTriggerThresholdType("")
     }
 
     const subscribeTkr = (stockName) => {
@@ -182,6 +224,26 @@ export default function StockClient() {
     return (
         <>
             <div className="search-container">
+                <section>
+                    {/**assertive  will have screen reader annouce the msg immdeitayly if focus is set here */}
+                    <p
+                        className={goodMsg ? "errmsg" : "offscreen"}
+                        aria-live="assertive"
+                    >
+                        <Alert onClose={() => {setGoodMsg("")}} severity="success">{goodMsg}</Alert>
+                        <br></br>
+                    </p>
+                </section>
+                <section>
+                    {/**assertive  will have screen reader annouce the msg immdeitayly if focus is set here */}
+                    <p
+                        className={triggerMessage ? "errmsg" : "offscreen"}
+                        aria-live="assertive"
+                    >
+                        <Alert onClose={() => {setTriggerMessage("")}} severity="info">{triggerMessage}</Alert>
+                        <br></br>
+                    </p>
+                </section>
                 <div className="search-inner">
                     <TextField
                         className="enter-tkr"
@@ -219,7 +281,7 @@ export default function StockClient() {
                     <InputLabel style={{ "margin-top": "0px" }} id="select-label">Set Trigger</InputLabel>
                     <Select
                         labelId="select-label"
-                        style={{ "margin-top": "0px" }}
+                        style={{ "margin-top": "15px" }}
                         value={triggerStock}
                         onChange={(e) => setTriggerStock(e.target.value)}
                     >
@@ -231,13 +293,32 @@ export default function StockClient() {
                     </Select>
                 </FormControl>
                 <TextField
-                    style={{ height: "25px" }}
+                    style={{ "margin-top": "0px", "height": "1px" }}
                     id="outlined-basic"
                     label="Trigger Price..."
                     variant="outlined"
                     value={triggerPrice}
                     onChange={(e) => setTriggerPrice(e.target.value)}
                 />
+                <FormControl
+                    // style={{ height: "25px" }} 
+                    variant="standard"
+                    sx={{ m: 1, minWidth: 120 }}
+                >
+                    <InputLabel style={{ "margin-top": "0px" }} id="select-label">Set Threshold Type</InputLabel>
+                    <Select
+                        labelId="select-label"
+                        style={{ "margin-top": "15px" }}
+                        value={triggerThresholdType}
+                        onChange={(e) => setTriggerThresholdType(e.target.value)}
+                    >
+                        {triggerThresholdTypes.map((thresholdType) => {
+                            return (
+                                <MenuItem value={thresholdType}>{thresholdType}</MenuItem>
+                            )
+                        })}
+                    </Select>
+                </FormControl>
                 <Button
                     variant="contained"
                     onClick={handleSetTriggerSubmit}>
