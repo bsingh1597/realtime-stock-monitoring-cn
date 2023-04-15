@@ -8,6 +8,17 @@ public class TriggerData {
 	private Double price;
 	
 	private TriggerType triggerType;
+	
+	public TriggerData() {}
+	
+	public TriggerData(String symbol, Double price, TriggerType triggerType) {
+		super();
+		this.symbol = symbol;
+		this.price = price;
+		this.triggerType = triggerType;
+	}
+
+
 
 	public String getSymbol() {
 		return symbol;
