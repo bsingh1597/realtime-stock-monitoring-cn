@@ -49,7 +49,7 @@ const ChatRoom = () => {
         setAlertMessageData({ ...alertMessages })
         console.log("Alertmin onConnected" + alertMessages.message);
         console.log("OnConnected: " + JSON.stringify(userData));
-        stompClient.subscribe('/chatroom/alert', onAlertMessageReceived);
+        // stompClient.subscribe('/chatroom/alert', onAlertMessageReceived);
         stompClient.subscribe('/chatroom/public', onMessageReceived);
         userJoin();
     }
