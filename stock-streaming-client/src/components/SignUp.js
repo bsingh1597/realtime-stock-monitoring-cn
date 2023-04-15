@@ -39,7 +39,6 @@ export default function SignUp() {
         } else {
           setErrMsg("User with  the username already exists!");
           setError(true);
-          //console.log("ALERT FOR EMAIL ALREADY IN USE!");
         }
         errRef.current.focus();
       })
@@ -58,7 +57,6 @@ export default function SignUp() {
     var email = document.getElementById("email");
     var password = document.getElementById("password");
     var confirmPassword = document.getElementById("confirmPassword");
-    //var termsAndConditions = document.getElementById("conditions-check");
 
     if (
       firstName.value === "" ||
@@ -67,7 +65,6 @@ export default function SignUp() {
       email.value === "" ||
       password.value === "" ||
       confirmPassword.value === ""
-      //!termsAndConditions.checked
       ) {
       document.getElementById("registerButton").disabled = true;
     } else {
@@ -186,10 +183,6 @@ export default function SignUp() {
       <br></br>
       <hr class="half-width"></hr>
       <br></br>
-      {/* <div className="checkbox">
-        <input type="checkbox" id="conditions-check" onChange={validate} />I
-        agree to the Terms and Conditions
-      </div> */}
       <button
         type="submit"
         className="btn"
