@@ -14,6 +14,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -60,32 +61,34 @@ public class StockPriceTriggerService {
 		if (responseHavingData != null) {
 			JSONObject quote = (JSONObject) responseHavingData.get(0);
 			String stockTkr = (String) quote.get("s");
-			Double currentPrice = (Double) quote.get("p");
+			Double currentPrice = (quote.get("p") instanceof Double) ? (Double) quote.get("p") : null;
 			logger.info("Current Price: {} and {}", stockTkr, currentPrice);
 
 //			Check for the stock price based on the trigger passed by client
-			TriggerData responseData = subscribedTriggers.get(stockTkr);
-			if (responseData != null) {
-				switch (responseData.getTriggerType()) {
-				case StopLoss:
-					if (currentPrice <= responseData.getPrice()) {
-						logger.info("StopLoss triggered for stock {}", responseData.getSymbol());
-						sendAlert(MessageBuilder.getInstance()
-								.setMessage(String.format("Price dropped for Stock %s below %s",
-										responseData.getSymbol(), responseData.getPrice()))
-								.build());
+			if(StringUtils.isNoneEmpty(stockTkr) && currentPrice != null) {
+				TriggerData responseData = subscribedTriggers.get(stockTkr);
+				if (responseData != null) {
+					switch (responseData.getTriggerType()) {
+					case StopLoss:
+						if (currentPrice <= responseData.getPrice()) {
+							logger.info("StopLoss triggered for stock {}", responseData.getSymbol());
+							sendAlert(MessageBuilder.getInstance()
+									.setMessage(String.format("Price dropped for Stock %s below %s",
+											responseData.getSymbol(), responseData.getPrice()))
+									.build());
+						}
+						break;
+					case Target:
+						if (currentPrice >= responseData.getPrice()) {
+							logger.info("Target triggered for stock {}", responseData.getSymbol());
+							sendAlert(MessageBuilder.getInstance()
+									.setMessage(String.format("Price exceeded for Stock %s above %s",
+											responseData.getSymbol(), responseData.getPrice()))
+									.build());
+						}
+					default:
+						break;
 					}
-					break;
-				case Target:
-					if (currentPrice >= responseData.getPrice()) {
-						logger.info("Target triggered for stock {}", responseData.getSymbol());
-						sendAlert(MessageBuilder.getInstance()
-								.setMessage(String.format("Price exceeded for Stock %s above %s",
-										responseData.getSymbol(), responseData.getPrice()))
-								.build());
-					}
-				default:
-					break;
 				}
 			}
 		}
@@ -98,7 +101,7 @@ public class StockPriceTriggerService {
 			uri = new URI("wss://ws.finnhub.io?token=cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0");
 
 			WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-			container.connectToServer(this, uri);
+			container.connectToServer(this, uri).setMaxIdleTimeout(0);
 		} catch (URISyntaxException | DeploymentException | IOException e) {
 			e.printStackTrace();
 		}
@@ -109,6 +112,7 @@ public class StockPriceTriggerService {
 
 			subscribedTriggers.put(triggerData.getSymbol(), triggerData);
 			String subscriptionMessage = "{\"type\":\"subscribe\",\"symbol\":\"" + triggerData.getSymbol()+"\"}";
+			session.setMaxIdleTimeout(0);
 			session.getBasicRemote().sendText(subscriptionMessage);
 		} catch (IOException e) {
 			e.printStackTrace();
