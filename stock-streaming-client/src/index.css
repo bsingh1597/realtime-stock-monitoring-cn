@@ -15,7 +15,7 @@ code {
 p.offscreen {
   display: none;
 }
-p.errmsg {
+p.alertMsg {
   display: block;
 }
 
