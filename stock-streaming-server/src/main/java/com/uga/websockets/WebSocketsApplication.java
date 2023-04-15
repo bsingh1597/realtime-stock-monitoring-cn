@@ -5,17 +5,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import com.uga.websockets.controller.StockPriceTrigger;
+import com.uga.websockets.service.StockPriceTriggerService;
 
 @SpringBootApplication
 @EnableScheduling
 public class WebSocketsApplication {
 
 	public static void main(String[] args) {
-		//SpringApplication.run(WebSocketsApplication.class, args);
 		ApplicationContext app = SpringApplication.run(WebSocketsApplication.class, args);
-		StockPriceTrigger myBean = app.getBean(StockPriceTrigger.class);
-		myBean.subscribeToStock(null, 0);
+		StockPriceTriggerService stockPriceTrigger = app.getBean(StockPriceTriggerService.class);
+		stockPriceTrigger.connectToFinHub();
 	}
 
 }
