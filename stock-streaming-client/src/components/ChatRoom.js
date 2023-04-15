@@ -14,10 +14,7 @@ const ChatRoom = () => {
     const from = location.state?.from?.pathname;
 
     const [publicChats, setPublicChats] = useState([]);
-    const [alertMessage, setAlertMessage] = useState([]);
-    const [alertMessages, setAlertMessageData] = useState({
-        message: ''
-    })
+
     const [userData, setUserData] = useState({
         userName: sessionStorage.getItem("user"),
         receivername: '',
@@ -27,7 +24,6 @@ const ChatRoom = () => {
     useEffect(() => {
         console.log("connected in user chatroom: " + sessionStorage.getItem("user"))
         console.log("logged in user token chatroom: " + sessionStorage.getItem("jwtToken"))
-        // setUserData({...userData, userName: sessionStorage.getItem("user")})
         connect();
     }, []);
 
@@ -46,10 +42,7 @@ const ChatRoom = () => {
     const onConnected = () => {
         console.log("On Connected")
         setUserData({ ...userData, connected: true });
-        setAlertMessageData({ ...alertMessages })
-        console.log("Alertmin onConnected" + alertMessages.message);
         console.log("OnConnected: " + JSON.stringify(userData));
-        // stompClient.subscribe('/chatroom/alert', onAlertMessageReceived);
         stompClient.subscribe('/chatroom/public', onMessageReceived);
         userJoin();
     }
@@ -65,7 +58,7 @@ const ChatRoom = () => {
 
     const onMessageReceived = (req) => {
         let reqData = JSON.parse(req.body);
-        console.log("ABC XYZ", JSON.stringify(req.body));
+        console.log("ABC XYZ ChatRoom", JSON.stringify(req.body));
         switch (reqData.status) {
             case "MESSAGE":
                 publicChats.push(reqData);
@@ -89,20 +82,12 @@ const ChatRoom = () => {
         }
     }
 
-    const onAlertMessageReceived = (req) => {
-        let reqData = JSON.parse(req.body);
-        console.log("ALERTTT!!", JSON.stringify(req.body));
-        alertMessage.push(reqData);
-        setAlertMessage([...alertMessage]);
-    }
-
     const onError = (err) => {
     }
 
     const handleMessage = (event) => {
         const { value } = event.target;
         setUserData({ ...userData, "message": value });
-        // setAlertMessageData({...alertMessages, "message": value})
     }
     const sendValue = () => {
         console.log("Inside send message")
@@ -114,7 +99,7 @@ const ChatRoom = () => {
             };
             console.log(textMessage);
             stompClient.send("/app/message", {}, JSON.stringify(textMessage));
-            // setUserData({ ...userData, "message": "" });
+            setUserData({ ...userData, "message": "" });
         }
     }
     const handleUserName = (event) => {
@@ -152,15 +137,6 @@ const ChatRoom = () => {
                         <Button style={{ "fontSize": "12px" }} variant='outlined' color='error' onClick={handleUserLogout}> Logout </Button>
                         <div className="chat-messages">
                             {publicChats.map((chat, index) => (
-                                <ul>
-                                    <li className={`message ${chat.senderName === userData.userName && "self"}`} key={index}>
-                                        {chat.senderName !== userData.userName && <div className="avatar">{chat.senderName}</div>}
-                                        <div className="message-data">{chat.message}</div>
-                                        {chat.senderName === userData.userName && <div className="avatar self">{chat.senderName}</div>}
-                                    </li>
-                                </ul>
-                            ))}
-                            {Array.from(alertMessage).map((chat, index) => (
                                 <ul>
                                     <li className={`message ${chat.senderName === userData.userName && "self"}`} key={index}>
                                         {chat.senderName !== userData.userName && <div className="avatar">{chat.senderName}</div>}

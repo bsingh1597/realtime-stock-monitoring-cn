@@ -1,4 +1,4 @@
-import React, { ReactDOM, useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { w3cwebsocket as WebSocket } from "websocket";
 import axios from "axios";
 import { format } from 'react-string-format';
@@ -17,7 +17,7 @@ const wsClient = new WebSocket(WS_URL)
 
 // const triggerClient = new WebSocket(WS_URL)
 
-var stompClient = null;
+var stompClient1 = null;
 export default function StockClient() {
 
 
@@ -32,6 +32,9 @@ export default function StockClient() {
     const [triggerStock, setTriggerStock] = useState("")
     const [subsTriggers, setSubsTriggers] = useState([])
     const [triggerThresholdType, setTriggerThresholdType] = useState("")
+    const [triggerMessage, setTriggerMessage] = useState("")
+
+    const triggerMessageTemplate = '{0} for Stock {1} at price {2}';
 
     const intialStocks = ['Amazon', 'Bitcoin USD']
 
@@ -115,22 +118,23 @@ export default function StockClient() {
             // , null, {
             //     headers: {'Authorization': 'Bearer '+ jwtToken}}
         );
-        stompClient = over(Sock);
-        stompClient.connect({}, onConnected, onError);
+        stompClient1 = over(Sock);
+        stompClient1.connect({}, onConnected, onError);
         console.log("After setting the connection")
     }
 
     const onConnected = () => {
-        console.log("On Connected")
-        stompClient.subscribe('/chatroom/alert', onAlertMessageReceived);
+        console.log("On Connected StockClient")
+        stompClient1.subscribe('/trigger/alert', onAlertMessageReceived);
     }
 
-    const onAlertMessageReceived = (req) => {
+    const onAlertMessageReceived = (res) => {
         console.log("onAlertMessageReceived")
-        let reqData = JSON.parse(req.body);
-        console.log("ALERTTT!!", JSON.stringify(req.body));
-        // alertMessage.push(reqData);
-        // setAlertMessage([...alertMessage]);
+        let resData = JSON.parse(res.body);
+        console.log("ALERTTT!! StockClient", JSON.stringify(res.body));
+
+        console.log(format(triggerMessageTemplate, resData.triggerType, resData.symbol, resData.price))
+        setTriggerMessage(format(triggerMessageTemplate, resData.triggerType, resData.symbol, resData.price));
     }
 
     const onError = (err) => {
@@ -227,6 +231,16 @@ export default function StockClient() {
                         aria-live="assertive"
                     >
                         <Alert onClose={() => {setGoodMsg("")}} severity="success">{goodMsg}</Alert>
+                        <br></br>
+                    </p>
+                </section>
+                <section>
+                    {/**assertive  will have screen reader annouce the msg immdeitayly if focus is set here */}
+                    <p
+                        className={triggerMessage ? "errmsg" : "offscreen"}
+                        aria-live="assertive"
+                    >
+                        <Alert onClose={() => {setTriggerMessage("")}} severity="info">{triggerMessage}</Alert>
                         <br></br>
                     </p>
                 </section>
