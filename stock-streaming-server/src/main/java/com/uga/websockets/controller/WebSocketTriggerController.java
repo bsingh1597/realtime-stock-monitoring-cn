@@ -3,7 +3,7 @@ package com.uga.websockets.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +18,7 @@ public class WebSocketTriggerController {
 	@Autowired
 	StockPriceTriggerService stockPriceTriggerService;
 
-	@GetMapping("/subscribe")
+	@PostMapping("/subscribe")
 	public String subscribeToStock(@RequestBody TriggerData triggerData) {
 
 		logger.info("Inside subscribeToStock: {}", triggerData);
