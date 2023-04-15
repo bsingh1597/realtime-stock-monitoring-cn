@@ -150,22 +150,26 @@ const ChatRoom = () => {
                     <div className="chat-content">
                         <h4>Global Chat</h4>
                         <Button style={{ "fontSize": "12px" }} variant='outlined' color='error' onClick={handleUserLogout}> Logout </Button>
-                        <ul className="chat-messages">
+                        <div className="chat-messages">
                             {publicChats.map((chat, index) => (
-                                <ul className={`message ${chat.senderName === userData.userName && "self"}`} key={index}>
-                                    {chat.senderName !== userData.userName && <div className="avatar">{chat.senderName}</div>}
-                                    <div className="message-data">{chat.message}</div>
-                                    {chat.senderName === userData.userName && <div className="avatar self">{chat.senderName}</div>}
+                                <ul>
+                                    <li className={`message ${chat.senderName === userData.userName && "self"}`} key={index}>
+                                        {chat.senderName !== userData.userName && <div className="avatar">{chat.senderName}</div>}
+                                        <div className="message-data">{chat.message}</div>
+                                        {chat.senderName === userData.userName && <div className="avatar self">{chat.senderName}</div>}
+                                    </li>
                                 </ul>
                             ))}
                             {Array.from(alertMessage).map((chat, index) => (
-                                <ul className={`message ${chat.senderName === userData.userName && "self"}`} key={index}>
-                                    {chat.senderName !== userData.userName && <div className="avatar">{chat.senderName}</div>}
-                                    <div className="message-data">{chat.message}</div>
-                                    {chat.senderName === userData.userName && <div className="avatar self">{chat.senderName}</div>}
+                                <ul>
+                                    <li className={`message ${chat.senderName === userData.userName && "self"}`} key={index}>
+                                        {chat.senderName !== userData.userName && <div className="avatar">{chat.senderName}</div>}
+                                        <div className="message-data">{chat.message}</div>
+                                        {chat.senderName === userData.userName && <div className="avatar self">{chat.senderName}</div>}
+                                    </li>
                                 </ul>
                             ))}
-                        </ul>
+                        </div>
 
                         <div className="send-message">
                             <input type="text" className="input-message" placeholder="Enter message" value={userData.message} onChange={handleMessage} />
