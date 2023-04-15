@@ -6,9 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.uga.websockets.entity.Message;
-import com.uga.websockets.entity.Message.MessageBuilder;
 import com.uga.websockets.entity.TriggerData;
 
 @RestController
@@ -56,19 +52,13 @@ public class WebSocketTriggerController {
 			case StopLoss:
 				if (currentPrice <= entry.getValue().getPrice()) {
 					logger.info("StopLoss triggered for stock {}", entry.getValue().getSymbol());
-					sendAlert(MessageBuilder.getInstance()
-							.setMessage(String.format("Price dropped for Stock %s below %s",
-									entry.getValue().getSymbol(), entry.getValue().getPrice()))
-							.build());
+					sendAlert(entry.getValue());
 				}
 				break;
 			case Target:
 				if (currentPrice >= entry.getValue().getPrice()) {
 					logger.info("Target triggered for stock {}", entry.getValue().getSymbol());
-					sendAlert(MessageBuilder.getInstance()
-							.setMessage(String.format("Price exceeded for Stock %s above %s",
-									entry.getValue().getSymbol(), entry.getValue().getPrice()))
-							.build());
+					sendAlert(entry.getValue());
 				}
 			default:
 				break;
@@ -78,12 +68,10 @@ public class WebSocketTriggerController {
 	}
 	
 
-	@MessageMapping("/alert")
-	@SendTo("/chatroom/alert")
-	public Message sendAlert(@Payload Message message) {
-		logger.info("Inside SendAlert" + message);
-		simpMessagingTemplate.convertAndSend("/trigger/alert", message);
-		return message;
+	public TriggerData sendAlert(@Payload TriggerData triggerData) {
+		logger.info("Inside SendAlert" + triggerData);
+		simpMessagingTemplate.convertAndSend("/trigger/alert", triggerData);
+		return triggerData;
 	}
 
 }
