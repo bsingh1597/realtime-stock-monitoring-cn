@@ -35,7 +35,7 @@ export default function SignUp() {
       .then((res) => {
         console.log(JSON.stringify(res.data));
         if (res.data === "User created") {
-          navigate("/login");
+          navigate("/postSignUp");
         } else {
           setErrMsg("User with  the username already exists!");
           setError(true);

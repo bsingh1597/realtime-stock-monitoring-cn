@@ -146,7 +146,7 @@ const ChatRoom = () => {
                 <div className="chat-box" >
                     <div className="chat-content">
                         <h4>Global Chat</h4>
-                        <Button style={{ "fontSize": "12px" }} variant='outlined' color='error' onClick={handleUserLogout}> Logout </Button>
+                        <Button style={{ "fontSize": "12px" }} variant='outlined' color='warning' onClick={handleUserLogout}> Logout </Button>
                         <div className="chat-messages">
                             {publicChats.map((chat, index) => (
                                 <ul>
