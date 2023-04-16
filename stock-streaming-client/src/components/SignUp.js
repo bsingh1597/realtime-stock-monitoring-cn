@@ -49,7 +49,7 @@ export default function SignUp() {
       });
   };
 
-
+  // validation of user provided details
   const validate = () => {
     var firstName = document.getElementById("firstName");
     var lastName = document.getElementById("lastName");

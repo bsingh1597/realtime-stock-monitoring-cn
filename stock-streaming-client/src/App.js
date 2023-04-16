@@ -4,7 +4,7 @@ import './App.css';
 import NavBar from './components/NavBar';
 import Home from "./components/Home"
 import Login from './components/Login';
-
+import SignUp from "./components/SignUp"
 function App() {
   return (
     <>
@@ -16,7 +16,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
-        {/* <Route path="/signup" element={<SignUp />} /> */}
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
     </>
   );
