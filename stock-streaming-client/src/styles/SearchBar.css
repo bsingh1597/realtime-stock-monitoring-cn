@@ -28,6 +28,8 @@ input {
 .search-inner {
   display: flex;
   margin-bottom: 5px;
+  position: relative;
+  top: -20px;
 }
 
 .search-inner input{

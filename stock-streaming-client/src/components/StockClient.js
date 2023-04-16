@@ -30,9 +30,10 @@ export default function StockClient() {
     const [currentSubsTkr, setCurrentSubsTkr] = useState([])
     const [triggerPrice, setTriggerPrice] = useState("")
     const [triggerStock, setTriggerStock] = useState("")
-    const [subsTriggers, setSubsTriggers] = useState([])
+    // const [subsTriggers, setSubsTriggers] = useState([]) 
     const [triggerThresholdType, setTriggerThresholdType] = useState("")
     const [triggerMessage, setTriggerMessage] = useState("")
+    const [subsTriggersList, setSubsTriggersList] = useState([]);
 
     const triggerMessageTemplate = '{0} for Stock {1} at price {2}';
 
@@ -75,12 +76,6 @@ export default function StockClient() {
             }
         },
     }]
-
-    const handleSetTrigger = (symbol) => {
-        console.log("Inside handleSetTrigger for symbol: " + symbol)
-        // TODO - code to call the backend api for triggers
-
-    }
 
     let initalSubsTkrs = []
     let initialSubsStocks = []
@@ -129,12 +124,20 @@ export default function StockClient() {
     }
 
     const onAlertMessageReceived = (res) => {
-        console.log("onAlertMessageReceived")
         let resData = JSON.parse(res.body);
-        console.log("ALERTTT!! StockClient", JSON.stringify(res.body));
+        console.log("ALERTTT!! StockClient", JSON.stringify(resData));
+        console.log("subsTriggerList: ", JSON.stringify(subsTriggersList))
+        subsTriggersList.filter((triggerData => {
+            console.log("triggerData: ", JSON.stringify(triggerData))
+            // console.log("triggerDataLocal: ", JSON.stringify(resData))
+            // console.log("boolean1: ", resData.symbol === triggerData.symbol && resData.triggerType === triggerData.triggerType)
+            return resData && resData.symbol === triggerData.symbol && resData.price === triggerData.price && resData.triggerType === triggerData.triggerType
+        })).map((triggerData) => {
+            console.log(format(triggerMessageTemplate, resData.triggerType, resData.symbol, resData.price))
+            setTriggerMessage(format(triggerMessageTemplate, resData.triggerType, resData.symbol, resData.price));
+        }
+        )
 
-        console.log(format(triggerMessageTemplate, resData.triggerType, resData.symbol, resData.price))
-        setTriggerMessage(format(triggerMessageTemplate, resData.triggerType, resData.symbol, resData.price));
     }
 
     const onError = (err) => {
@@ -187,10 +190,17 @@ export default function StockClient() {
         console.log("trigger price: " + triggerPrice)
         console.log("trigger stock: " + triggerStock)
         console.log("trigger type: " + triggerThresholdType)
-        if (triggerPrice && triggerStock) {
-            setSubsTriggers([...subsTriggers, triggerStock])
+        if (triggerPrice && triggerStock && triggerThresholdType) {
+            // setSubsTriggers([...subsTriggers, triggerStock])
+            const triggerData = {
+                symbol: triggerStock,
+                price: parseFloat(triggerPrice).toFixed(2),
+                triggerType: triggerThresholdType
+            }
+            subsTriggersList.push(triggerData);
+            setSubsTriggersList(subsTriggersList);
             axios
-                .post("http://localhost:8082/subscribe", { symbol: triggerStock, price: triggerPrice, triggerType: triggerThresholdType })
+                .post("http://localhost:8082/subscribe", triggerData)
                 .then((res) => {
                     console.log(JSON.stringify(res.data));
                     setGoodMsg(res.data)
@@ -227,20 +237,20 @@ export default function StockClient() {
                 <section>
                     {/**assertive  will have screen reader annouce the msg immdeitayly if focus is set here */}
                     <p
-                        className={goodMsg ? "errmsg" : "offscreen"}
+                        className={goodMsg ? "errmsg1" : "offscreen"}
                         aria-live="assertive"
                     >
-                        <Alert onClose={() => {setGoodMsg("")}} severity="success">{goodMsg}</Alert>
+                        <Alert onClose={() => { setGoodMsg("") }} severity="success">{goodMsg}</Alert>
                         <br></br>
                     </p>
                 </section>
                 <section>
                     {/**assertive  will have screen reader annouce the msg immdeitayly if focus is set here */}
                     <p
-                        className={triggerMessage ? "errmsg" : "offscreen"}
+                        className={triggerMessage ? "alertMsg" : "offscreen"}
                         aria-live="assertive"
                     >
-                        <Alert onClose={() => {setTriggerMessage("")}} severity="info">{triggerMessage}</Alert>
+                        <Alert onClose={() => { setTriggerMessage("") }} severity="info">{triggerMessage}</Alert>
                         <br></br>
                     </p>
                 </section>

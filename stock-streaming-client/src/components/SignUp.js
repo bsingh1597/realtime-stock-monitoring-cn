@@ -90,7 +90,7 @@ export default function SignUp() {
           {/**assertive  will have screen reader annouce the msg immdeitayly if focus is set here */}
           <p
             ref={errRef}
-            className={errMsg ? "errmsg" : "offscreen"}
+            className={errMsg ? "alertMsg" : "offscreen"}
             aria-live="assertive"
           >
             <Alert severity={error ? "error" : "success"}>{errMsg}</Alert>
