@@ -30,6 +30,11 @@ public class WebSocketTriggerController {
 	@Autowired
 	SimpMessagingTemplate simpMessagingTemplate;
 
+	/**
+	 * Method for subscribing to the stocks 
+	 * @param triggerData
+	 * @return
+	 */
 	@PostMapping("/subscribe")
 	public String subscribeToStock(@RequestBody TriggerData triggerData) {
 
@@ -38,6 +43,9 @@ public class WebSocketTriggerController {
 		return "Subscribed to Stock";
 	}
 
+	/**
+	 * to check the stock price for every 6 seconds
+	 */
 	@Scheduled(fixedDelay = 6000) // run the code every minute
 	public void checkStockPrice() {
 		logger.info("Inside checkStockPrice");
@@ -77,7 +85,11 @@ public class WebSocketTriggerController {
 
 	}
 
-	// This uses simMessagingTeplate to push trigger data to topic which is subscribed by the clients
+	/**
+	 * This uses simMessagingTeplate to push trigger data to topic which is subscribed by the clients
+	 * @param triggerData
+	 * @return
+	 */
 	public TriggerData sendAlert(@Payload TriggerData triggerData) {
 		logger.info("Inside SendAlert" + triggerData);
 		simpMessagingTemplate.convertAndSend("/trigger/alert", triggerData);

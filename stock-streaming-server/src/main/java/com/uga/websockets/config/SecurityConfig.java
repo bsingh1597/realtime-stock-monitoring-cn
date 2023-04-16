@@ -36,7 +36,14 @@ public class SecurityConfig {
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 	
-	//provides authentication support to verify user's identity by username, password
+	
+	/**
+	 * provides authentication support to verify user's identity by username, password
+	 * @param http
+	 * @param userDetailService
+	 * @return
+	 * @throws Exception
+	 */
 	@Bean
 	public AuthenticationManager authenticationManager(HttpSecurity http,
 			UserServiceImpl userDetailService) throws Exception {
@@ -44,7 +51,13 @@ public class SecurityConfig {
 				.passwordEncoder(passwordEncoder).and().build();
 	}
 	
-	// contains filters to execute security features 
+
+	/**
+	 * contains filters to execute security features 
+	 * @param http
+	 * @return
+	 * @throws Exception
+	 */
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		

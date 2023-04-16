@@ -16,6 +16,11 @@ public class ChatController {
 	Logger logger = LoggerFactory.getLogger(ChatController.class);
 	
 
+	/**
+	 * To receive the public message from the client
+	 * @param message
+	 * @return
+	 */
 	@MessageMapping("/message")
 	@SendTo("/chatroom/public")
 	public Message receivePublicMessgae(@Payload Message message) {
@@ -23,6 +28,11 @@ public class ChatController {
 		return message;
 	}
 
+	/**
+	 * Executes when the user logs out.
+	 * @param message
+	 * @return
+	 */
 	@MessageMapping("/logout")
 	@SendTo("/chatroom/public")
 	public Message userLogout(@Payload Message message) {

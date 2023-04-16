@@ -6,13 +6,13 @@ import "../styles/ChatRoom.css"
 import { Button } from "@mui/material";
 import SendIcon from '@mui/icons-material/Send';
 
+//Define the stompClient to connect to server
 var stompClient = null;
 const ChatRoom = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname;
-
     const [publicChats, setPublicChats] = useState([]);
 
     const [userData, setUserData] = useState({
@@ -27,28 +27,31 @@ const ChatRoom = () => {
         connect();
     }, []);
 
+    //For connecting to the server using stompClient over SockJS
     const connect = () => {
         console.log("Inside connect function")
         const jwtToken = sessionStorage.getItem("jwtToken")
         let Sock = new SockJS('http://localhost:8082/webSocket'
             // , null, {
-            //     headers: {'Authorization': 'Bearer '+ jwtToken}}
+            //     headers: {'Authorization': 'Bearer '+ jwtToken}}
         );
         stompClient = over(Sock);
         stompClient.connect({}, onConnected, onError);
         console.log("After setting the connection")
     }
 
+    //After connecting, setting the userData and subscribing to chat room.
     const onConnected = () => {
         console.log("On Connected")
         setUserData({ ...userData, connected: true });
         console.log("OnConnected: " + JSON.stringify(userData));
         stompClient.subscribe('/chatroom/public', onMessageReceived);
-        if(sessionStorage.getItem("logginMessage") === "false") {
+        if (sessionStorage.getItem("logginMessage") === "false") {
             userJoin();
         }
     }
 
+    //On user join, changing the user status to JOIN and sending the message to user destination.
     const userJoin = () => {
         console.log("OnConnected2: " + JSON.stringify(userData));
         let textMessage = {
@@ -56,12 +59,13 @@ const ChatRoom = () => {
             status: "JOIN"
         };
         stompClient.send("/app/message", {}, JSON.stringify(textMessage));
-        sessionStorage.setItem("logginMessage", true)
     }
 
+    //Actions to perform when a message is received
     const onMessageReceived = (req) => {
         let reqData = JSON.parse(req.body);
         console.log("ABC XYZ ChatRoom", JSON.stringify(req.body));
+        //Checking the status of the User.
         switch (reqData.status) {
             case "MESSAGE":
                 publicChats.push(reqData);
@@ -88,10 +92,12 @@ const ChatRoom = () => {
     const onError = (err) => {
     }
 
+    //Setting the message to the userData
     const handleMessage = (event) => {
         const { value } = event.target;
         setUserData({ ...userData, "message": value });
     }
+    //Sending the message to user
     const sendValue = () => {
         console.log("Inside send message")
         if (stompClient) {
@@ -109,9 +115,11 @@ const ChatRoom = () => {
         const { value } = event.target;
         setUserData({ ...userData, "userName": value });
     }
+    //When user logsout, send the logout message in chatroom
     const handleUserLogout = () => {
         console.log("Inside logout message")
 
+        //Clearing the session storage and local storage.
         sessionStorage.clear()
         localStorage.clear()
 
@@ -121,6 +129,7 @@ const ChatRoom = () => {
                 status: "MESSAGE"
             };
             console.log(textMessage);
+            //Broadcasting the user left message to all connected users.
             stompClient.send("/app/logout", {}, JSON.stringify(textMessage));
             setUserData({ ...userData, "message": "" });
             from
