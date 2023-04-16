@@ -32,8 +32,6 @@ const ChatRoom = () => {
         console.log("Inside connect function")
         const jwtToken = sessionStorage.getItem("jwtToken")
         let Sock = new SockJS('http://localhost:8082/webSocket'
-            // , null, {
-            //     headers: {'Authorization': 'Bearer '+ jwtToken}}
         );
         stompClient = over(Sock);
         stompClient.connect({}, onConnected, onError);
@@ -53,7 +51,7 @@ const ChatRoom = () => {
 
     //On user join, changing the user status to JOIN and sending the message to user destination.
     const userJoin = () => {
-        console.log("OnConnected2: " + JSON.stringify(userData));
+        console.log("OnConnected: " + JSON.stringify(userData));
         let textMessage = {
             senderName: sessionStorage.getItem("user"),
             status: "JOIN"
@@ -64,7 +62,7 @@ const ChatRoom = () => {
     //Actions to perform when a message is received
     const onMessageReceived = (req) => {
         let reqData = JSON.parse(req.body);
-        console.log("ABC XYZ ChatRoom", JSON.stringify(req.body));
+        console.log("ChatRoom", JSON.stringify(req.body));
         //Checking the status of the User.
         switch (reqData.status) {
             case "MESSAGE":
@@ -72,7 +70,7 @@ const ChatRoom = () => {
                 setPublicChats([...publicChats]);
                 break;
             case "JOIN":
-                console.log("Join1 message: ", JSON.stringify(userData))
+                console.log("Join message: ", JSON.stringify(userData))
                 if (reqData.senderName !== userData.userName) {
                     reqData.message = "Joined the Chatroom";
                     publicChats.push(reqData);
@@ -111,10 +109,7 @@ const ChatRoom = () => {
             setUserData({ ...userData, "message": "" });
         }
     }
-    const handleUserName = (event) => {
-        const { value } = event.target;
-        setUserData({ ...userData, "userName": value });
-    }
+   
     //When user logsout, send the logout message in chatroom
     const handleUserLogout = () => {
         console.log("Inside logout message")
@@ -161,7 +156,6 @@ const ChatRoom = () => {
 
                         <div className="send-message">
                             <input type="text" className="input-message" placeholder="Enter message" value={userData.message} onChange={handleMessage} />
-                            {/* <button type="button" className="send-button" onClick={sendValue}>Send</button> */}
                             <Button variant="contained" endIcon={<SendIcon />} onClick={sendValue}>
                                 Send
                             </Button>
