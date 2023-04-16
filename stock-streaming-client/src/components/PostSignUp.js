@@ -1,6 +1,7 @@
 import React from "react";
 import "../styles/PostSignUp.css";
 
+// redircted page after signup. confirms the user registration
 export default function PostSignUp() {
   return (
     <div className="verify-body">

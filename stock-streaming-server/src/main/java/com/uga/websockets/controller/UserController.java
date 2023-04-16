@@ -55,6 +55,7 @@ public class UserController {
 		return "signup";
 	}
 	
+	//controller method for user registration/signup
 	@PostMapping("/register")
 	public ResponseEntity<?> registerUser(@RequestBody User user) {
 		
@@ -71,6 +72,7 @@ public class UserController {
 			
 	}
 	
+	//controller method for user login
 	@GetMapping("/login")
 	public ResponseEntity<?> authenticateLogin(@RequestHeader(HttpHeaders.AUTHORIZATION) String auth)
 			throws InvalidKeySpecException, NoSuchAlgorithmException {
@@ -104,6 +106,8 @@ public class UserController {
 				HttpStatus.OK);
 	}
 	
+	
+	//controller method to activate the registered/signed up user before logging in
 	@GetMapping("/register/confirm")
 	public void confirmMail(@RequestParam String token, HttpServletResponse httpServletResponse) {
 		

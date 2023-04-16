@@ -2,6 +2,7 @@ import StockClient from "./StockClient";
 import "../styles/Home.css"
 import ChatRoom from "./ChatRoom";
 
+// home/start up page of the application
 export default function Home() {
 
     return (

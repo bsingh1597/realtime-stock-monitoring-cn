@@ -23,8 +23,16 @@ import com.uga.websockets.helper.WebSocketStocksConstant;
 public class WebSocketTriggerController {
 
 	Logger logger = LoggerFactory.getLogger(WebSocketTriggerController.class);
+	
+	// map to store triggers
+	Map<String, TriggerData> subscribedTriggers = new HashMap<>();
+	
+	private String finnhubApiKey = "cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0";
+	
+
 
 	Set<TriggerData> subscribedTriggers = new HashSet<>();
+
 
 	@Autowired
 	SimpMessagingTemplate simpMessagingTemplate;

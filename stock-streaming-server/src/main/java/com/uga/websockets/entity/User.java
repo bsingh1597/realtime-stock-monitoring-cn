@@ -15,6 +15,8 @@ import javax.persistence.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+//user entity whcih has user information like id, firstname, lastname, username, password and userstatus(active, inactive)
+     
 @Entity
 @Table(name = "user")
 public class User implements UserDetails{
