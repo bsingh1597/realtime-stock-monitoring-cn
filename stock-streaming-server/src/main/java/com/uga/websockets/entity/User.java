@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 //user entity whcih has user information like id, firstname, lastname, username, password and userstatus(active, inactive)
      
 @Entity
-@Table(name = "user")
+@Table(name = "user", schema = "stock_streaming_server")
 public class User implements UserDetails{
 	
 	private static final long serialVersionUID = 200473425164040004L;
