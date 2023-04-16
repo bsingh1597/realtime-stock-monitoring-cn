@@ -51,6 +51,7 @@ export default function Login() {
                     sessionStorage.setItem("loggedIn", true);
                     sessionStorage.setItem("jwtToken", res.data.token);
                     sessionStorage.setItem("user", user);
+                    sessionStorage.setItem("logginMessage", false)
 
                     console.log("before calling navigate");
                     if (remember) {

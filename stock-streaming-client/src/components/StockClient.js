@@ -30,7 +30,6 @@ export default function StockClient() {
     const [currentSubsTkr, setCurrentSubsTkr] = useState([])
     const [triggerPrice, setTriggerPrice] = useState("")
     const [triggerStock, setTriggerStock] = useState("")
-    // const [subsTriggers, setSubsTriggers] = useState([]) 
     const [triggerThresholdType, setTriggerThresholdType] = useState("")
     const [triggerMessage, setTriggerMessage] = useState("")
     const [subsTriggersList, setSubsTriggersList] = useState([]);
