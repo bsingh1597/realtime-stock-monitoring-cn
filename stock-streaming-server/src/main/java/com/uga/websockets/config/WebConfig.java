@@ -11,6 +11,7 @@ public class WebConfig implements WebMvcConfigurer{
 	@Value("${frontend.base.url}")
 	private String frontendBaseUrl;
 
+	//configuration method to share the controller method urls to the frontend
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**").allowedOrigins(frontendBaseUrl);

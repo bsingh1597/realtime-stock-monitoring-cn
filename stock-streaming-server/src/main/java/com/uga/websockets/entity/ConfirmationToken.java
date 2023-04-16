@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+//confirmation token entity which has id, token, createdon date and time
+//confirmation token is mapped to the user by foreign key mapping
 @Entity
 @Table(name = "confirmation_token")
 public class ConfirmationToken {

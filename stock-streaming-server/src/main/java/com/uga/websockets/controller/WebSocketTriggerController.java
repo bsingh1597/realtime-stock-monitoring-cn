@@ -21,13 +21,13 @@ public class WebSocketTriggerController {
 
 	Logger logger = LoggerFactory.getLogger(WebSocketTriggerController.class);
 	
+	// map to store triggers
 	Map<String, TriggerData> subscribedTriggers = new HashMap<>();
 	
 	private String finnhubApiKey = "cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0";
 	
 	@Autowired
 	SimpMessagingTemplate simpMessagingTemplate;
-
 
 	@PostMapping("/subscribe")
 	public String subscribeToStock(@RequestBody TriggerData triggerData) {
