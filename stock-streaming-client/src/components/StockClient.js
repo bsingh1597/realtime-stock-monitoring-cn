@@ -30,7 +30,6 @@ export default function StockClient() {
     const [currentSubsTkr, setCurrentSubsTkr] = useState([])
     const [triggerPrice, setTriggerPrice] = useState("")
     const [triggerStock, setTriggerStock] = useState("")
-    // const [subsTriggers, setSubsTriggers] = useState([]) 
     const [triggerThresholdType, setTriggerThresholdType] = useState("")
     const [triggerMessage, setTriggerMessage] = useState("")
     const [subsTriggersList, setSubsTriggersList] = useState([]);
@@ -247,7 +246,7 @@ export default function StockClient() {
                 <section>
                     {/**assertive  will have screen reader annouce the msg immdeitayly if focus is set here */}
                     <p
-                        className={triggerMessage ? "alertMsg" : "offscreen"}
+                        className={triggerMessage ? "errmsg" : "offscreen"}
                         aria-live="assertive"
                     >
                         <Alert onClose={() => { setTriggerMessage("") }} severity="info">{triggerMessage}</Alert>

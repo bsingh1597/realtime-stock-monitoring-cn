@@ -44,7 +44,9 @@ const ChatRoom = () => {
         setUserData({ ...userData, connected: true });
         console.log("OnConnected: " + JSON.stringify(userData));
         stompClient.subscribe('/chatroom/public', onMessageReceived);
-        userJoin();
+        if(sessionStorage.getItem("logginMessage") === "false") {
+            userJoin();
+        }
     }
 
     const userJoin = () => {
@@ -54,6 +56,7 @@ const ChatRoom = () => {
             status: "JOIN"
         };
         stompClient.send("/app/message", {}, JSON.stringify(textMessage));
+        sessionStorage.setItem("logginMessage", true)
     }
 
     const onMessageReceived = (req) => {
