@@ -227,7 +227,7 @@ export default function StockClient() {
                 <section>
                     {/**assertive  will have screen reader annouce the msg immdeitayly if focus is set here */}
                     <p
-                        className={goodMsg ? "errmsg" : "offscreen"}
+                        className={goodMsg ? "errmsg1" : "offscreen"}
                         aria-live="assertive"
                     >
                         <Alert onClose={() => {setGoodMsg("")}} severity="success">{goodMsg}</Alert>
