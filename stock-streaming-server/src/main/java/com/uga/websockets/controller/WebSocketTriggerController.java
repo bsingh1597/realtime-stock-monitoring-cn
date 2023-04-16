@@ -24,15 +24,8 @@ public class WebSocketTriggerController {
 
 	Logger logger = LoggerFactory.getLogger(WebSocketTriggerController.class);
 	
-	// map to store triggers
-	Map<String, TriggerData> subscribedTriggers = new HashMap<>();
-	
-	private String finnhubApiKey = "cgf7cgpr01qllg2ta1qgcgf7cgpr01qllg2ta1r0";
-	
-
-
+	// set to store subscribed triggers
 	Set<TriggerData> subscribedTriggers = new HashSet<>();
-
 
 	@Autowired
 	SimpMessagingTemplate simpMessagingTemplate;
@@ -49,6 +42,8 @@ public class WebSocketTriggerController {
 	public void checkStockPrice() {
 		logger.info("Inside checkStockPrice");
 		RestTemplate restTemplate = new RestTemplate();
+		
+		// Iterate over the set and call the FinhubApi to check for the price
 		for (TriggerData triggerData : subscribedTriggers) {
 			String apiUrl = String.format("https://finnhub.io/api/v1/quote?symbol=%s&token=%s", triggerData.getSymbol(),
 					WebSocketStocksConstant.FINHUB_TOKEN);
@@ -58,13 +53,13 @@ public class WebSocketTriggerController {
 			double currentPrice = (double) quote.get("c");
 			logger.info("Stock Price" + currentPrice);
 			switch (triggerData.getTriggerType()) {
-			case StopLoss:
+			case StopLoss: // StopLoss is the to be triggered when price of the stock goes down the trigger price
 				if (currentPrice <= Double.valueOf(triggerData.getPrice())) {
 					logger.info("StopLoss triggered for stock {}", triggerData.getSymbol());
 					sendAlert(triggerData);
 				}
 				break;
-			case Target:
+			case Target:  // Target is to be triggered when the price of the stock goes up the trigger proce
 				if (currentPrice >= Double.valueOf(triggerData.getPrice())) {
 					logger.info("Target triggered for stock {}", triggerData.getSymbol());
 					sendAlert(triggerData);
@@ -82,6 +77,7 @@ public class WebSocketTriggerController {
 
 	}
 
+	// This uses simMessagingTeplate to push trigger data to topic which is subscribed by the clients
 	public TriggerData sendAlert(@Payload TriggerData triggerData) {
 		logger.info("Inside SendAlert" + triggerData);
 		simpMessagingTemplate.convertAndSend("/trigger/alert", triggerData);
