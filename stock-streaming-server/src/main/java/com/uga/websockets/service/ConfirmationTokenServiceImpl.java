@@ -15,6 +15,7 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
 	ConfirmationTokenRepo confirmationTokenRepo;
 	
 	
+	// service method to store the confirmation token in database
 	@Override
 	public void saveConfirmationToken(ConfirmationToken confirmationToken) {
 		
@@ -22,6 +23,7 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
 		
 	}
 	
+	// service method to delete the confirmation token in database
 	@Override
 	public void deleteConfirmationToken(Long id) {
 		
@@ -29,6 +31,7 @@ public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
 		
 	}
 
+	// service method to find the confirmation token in database
 	@Override
 	public Optional<ConfirmationToken> findConfirmationTokenByToken(String token){
 		return confirmationTokenRepo.findByToken(token);

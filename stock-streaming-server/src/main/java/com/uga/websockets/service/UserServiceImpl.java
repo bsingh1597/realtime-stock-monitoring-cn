@@ -36,10 +36,12 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 	@Value("${mail.email.sender}")
 	private String senderEmail;
 	
+	//service method to save registered user's information in database
 	@Override
 	@Transactional
 	public User saveUser(User user) {
 
+		//encoding the password
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		user = userRepo.save(user);
 
@@ -50,16 +52,18 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 
 	}
 	
+	//service method to send activation email to the user provided email id during registration
 	@Override
 	public void sendConfirmationEmail(String email, String token) {
 
+		//creating new mail message template
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 
+		//sending mail to the 
 		mailMessage.setTo(email);
-		mailMessage.setSubject("Registration Confirmation email!!!");
+		mailMessage.setSubject("Stock Watch Registration Confirmation email!!!");
 		mailMessage.setFrom(senderEmail);
-		// mailMessage.setText("Your account has been registered successfully!!!!");
-		mailMessage.setText(String.format("Thank you for registering. Please click on the below link to activate your account.http://localhost:8082/register/confirm?token=%s", token));
+		mailMessage.setText(String.format("Thank you for registering in Stock Watch. Please click on the below link to activate your account.http://localhost:8082/register/confirm?token=%s", token));
 		mailSender.send(mailMessage);
 
 	}
@@ -69,16 +73,19 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 		return userRepo.findByUsername(username).get();
 	}
 
+	// finds the user from the database by the username provided during registration
 	@Override
 	public Optional<User> getUserByUsername(String username) {
 		return userRepo.findByUsername(username);
 	}
 	
+	// activates the registered user with confirmation token link and deletes the confirmation token after it is used by the user
 	@Override
 	public void confirmUser(ConfirmationToken confirmationToken) {
 
 		User user = confirmationToken.getUser();
 
+		// set the user status to active
 		user.setUserStatus(UserStatus.Active);
 		userRepo.save(user);
 

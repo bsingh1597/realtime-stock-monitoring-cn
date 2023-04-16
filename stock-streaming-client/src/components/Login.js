@@ -4,6 +4,7 @@ import { Alert } from "@mui/material";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import "../styles/Login.css";
 
+// login page 
 export default function Login() {
 
     const userRef = useRef();
@@ -146,7 +147,7 @@ export default function Login() {
                             </button>
                             <p className="sign-up">
                                 Don't have an account?{" "}
-                                <a href="/SignUp" className="red">
+                                <a href="/signup" className="red">
                                     Sign up here
                                 </a>
                             </p>

@@ -11,12 +11,15 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 @Configuration
 public class MailConfig {
 	
+	// email where all the server emails are sent from
 	@Value("${mail.email.sender}")
 	private String senderEmail;
 
+	// authentication token of the server email used
 	@Value("${mail.smtp.token}")
 	private String smtpToken;
 
+	// bean to send email which using SMTP protocol
 	@Bean
 	public JavaMailSender javaMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
