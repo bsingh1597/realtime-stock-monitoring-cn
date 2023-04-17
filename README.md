@@ -16,11 +16,20 @@ https://finnhub.io/docs/api/websocket-trades
 
 We have created a Docker file to build and run this application. Use below command line input to execute the docker file in the root directly, which in turn will build the dockers for the server and client and exeucte them. Maven 3 and docker are the requirements to run the application.
 
+Before starting the application execute the realtime-stock-monitoring-cn/stock-streaming-server/src/main/resources/data.sql script in mysql.
+<br>
+Update the port number and password of your host mysql server.
+
 chmod -R 777 realtime-stock-monitoring-cn
+<br>
 cd realtime-stock-monitoring-cn
+<br>
 docker build -t stock-streaming-server ./stock-streaming-server
+<br>
 docker build -t stock-streaming-client ./stock-streaming-client
+<br>
 docker-compose up
+<br>
 
 Alternatively use the steps present in Readme.md in the client and server folders to execute the application.
 
