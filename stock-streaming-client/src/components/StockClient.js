@@ -124,7 +124,7 @@ export default function StockClient() {
             return resData && resData.symbol === triggerData.symbol && resData.price === triggerData.price && resData.triggerType === triggerData.triggerType
         })).map((triggerData) => {
             console.log(format(StockConstant.TRIGGER_MESSAGE_TEMPLATE, resData.triggerType, resData.symbol, resData.price))
-            setTriggerMessage(format(StockConstant.TRIGGER_MESSAGE_TEMPLATE, resData.triggerType, resData.symbol, resData.price));
+            setTriggerMessage(format(StockConstant.TRIGGER_MESSAGE_TEMPLATE, resData.triggerType, StockConstant.SYMBOL_MAP_REVERSE[resData.symbol], resData.price));
         }
         )
     }
