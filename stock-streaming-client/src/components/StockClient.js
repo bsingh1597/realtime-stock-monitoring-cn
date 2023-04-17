@@ -34,12 +34,7 @@ export default function StockClient() {
     // List of subscribed triggers (This is used for showing trigger only to requested client)
     const [subsTriggersList, setSubsTriggersList] = useState(localStorage.getItem("subsTriggersList") ? JSON.parse(localStorage.getItem("subsTriggersList")) : [])
 
-    let initialData = [{
-        symbol: "",
-        companyName: "",
-        price: "",
-        pl: ""
-    }]
+    const [unsubscribetriggerData, setUnsubscribetriggerData] = useState()
 
     const columns = [{
         Header: 'Company_Name',
@@ -70,7 +65,8 @@ export default function StockClient() {
                 }
             }
         },
-    }]
+    },
+    ]
 
     let initalSubsTkrs = []
     // This hook is called when file is rebdered once every time
@@ -131,8 +127,28 @@ export default function StockClient() {
             setTriggerMessage(format(StockConstant.TRIGGER_MESSAGE_TEMPLATE, resData.triggerType, resData.symbol, resData.price));
         }
         )
-
     }
+
+    // This function removes the specific trigger
+    const removeTrigger = () => {
+        console.log("triggerMessage ", unsubscribetriggerData)
+
+        axios
+            .post("http://localhost:8082/unsubscribe/trigger", unsubscribetriggerData)
+            .then((res) => {
+                console.log(JSON.stringify(res.data));
+                setGoodMsg(res.data)
+            })
+            .catch((e) => {
+                console.log("Error in unsubscribe call " + JSON.stringify(e));
+            });
+        let newSubsTriggerDataList = subsTriggersList.filter((triggerData) =>
+            !(triggerData.triggerType === unsubscribetriggerData.triggerType &&
+                triggerData.symbol === unsubscribetriggerData.symbol &&
+                triggerData.price === unsubscribetriggerData.price))
+        setSubsTriggersList(newSubsTriggerDataList)
+        localStorage.setItem("subsTriggersList", JSON.stringify(newSubsTriggerDataList))
+    };
 
     const onError = (err) => {
         console.log("Error from our server: ", JSON.stringify(err))
@@ -200,7 +216,7 @@ export default function StockClient() {
 
             // Call to stock-streaming-server to subscribe the stock
             axios
-                .post("http://localhost:8082/subscribe", triggerData)
+                .post("http://localhost:8082/subscribe/trigger", triggerData)
                 .then((res) => {
                     console.log(JSON.stringify(res.data));
                     setGoodMsg(res.data)
@@ -254,7 +270,11 @@ export default function StockClient() {
                         className={triggerMessage ? "errmsg" : "offscreen"}
                         aria-live="assertive"
                     >
-                        <Alert onClose={() => { setTriggerMessage("") }} severity="info">{triggerMessage}</Alert>
+                        <div style={{ "display": "flex" }}>
+                            <Alert
+                                onClose={() => { setTriggerMessage("") }}
+                                severity="info">{triggerMessage}</Alert>
+                        </div>
                         <br></br>
                     </p>
                 </section>
@@ -308,7 +328,7 @@ export default function StockClient() {
                         })}
                     </Select>
                 </FormControl>
-                 {/* Price for trigger */}
+                {/* Price for trigger */}
                 <TextField
                     style={{ "margin-top": "0px", "height": "1px" }}
                     id="outlined-basic"
@@ -341,6 +361,32 @@ export default function StockClient() {
                     onClick={handleSetTriggerSubmit}>
                     Submit
                 </Button>
+            </div>
+            <div className="trigger-container" style={{ position: "flex" }}>
+                <FormControl
+                    variant="standard"
+                    sx={{ m: 1, minWidth: 120 }}
+                >
+                    {/* Type of Trigger StopLoss or Target */}
+                    <InputLabel style={{ "margin-top": "0px" }} id="select-label">Remove Trigger</InputLabel>
+                    <Select
+                        labelId="select-label"
+                        style={{ "margin-top": "15px" }}
+                        value={unsubscribetriggerData}
+                        onChange={(e) => setUnsubscribetriggerData(e.target.value)}
+                    >
+                        {subsTriggersList.map((triggerData) => {
+                            return (
+                                <MenuItem value={triggerData}>{triggerData.triggerType} for {triggerData.symbol} at price {triggerData.price}</MenuItem>
+                            )
+                        })}
+                    </Select>
+                    <Button
+                        variant="contained"
+                        onClick={removeTrigger}>
+                        Submit
+                    </Button>
+                </FormControl>
             </div>
         </>
     );
