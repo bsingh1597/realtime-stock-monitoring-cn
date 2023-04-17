@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { Alert } from "@mui/material";
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/Login.css";
 
 // login page 
@@ -57,6 +57,7 @@ export default function Login() {
                     if (remember) {
                         localStorage.setItem("jwtToken", token);
                         localStorage.setItem("user", user);
+                        localStorage.setItem("loggedIn", true);
                     }
                     from
                         ? navigate(from, { replace: true })
