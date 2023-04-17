@@ -10,32 +10,38 @@ import com.uga.websockets.repo.ConfirmationTokenRepo;
 
 @Service
 public class ConfirmationTokenServiceImpl implements ConfirmationTokenService {
-	
+
 	@Autowired
 	ConfirmationTokenRepo confirmationTokenRepo;
+
 	
-	
-	// service method to store the confirmation token in database
+	/**
+	 * service method to store the confirmation token in database
+	 */
 	@Override
 	public void saveConfirmationToken(ConfirmationToken confirmationToken) {
-		
+
 		confirmationTokenRepo.save(confirmationToken);
-		
-	}
-	
-	// service method to delete the confirmation token in database
-	@Override
-	public void deleteConfirmationToken(Long id) {
-		
-		confirmationTokenRepo.deleteById(id);
-		
+
 	}
 
-	// service method to find the confirmation token in database
+	/**
+	 * service method to delete the confirmation token in database
+	 */
 	@Override
-	public Optional<ConfirmationToken> findConfirmationTokenByToken(String token){
+	public void deleteConfirmationToken(Long id) {
+
+		confirmationTokenRepo.deleteById(id);
+
+	}
+
+	/**
+	 * service method to find the confirmation token in database
+	 */
+	@Override
+	public Optional<ConfirmationToken> findConfirmationTokenByToken(String token) {
 		return confirmationTokenRepo.findByToken(token);
-		
+
 	}
 
 }

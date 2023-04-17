@@ -19,7 +19,11 @@ public class MailConfig {
 	@Value("${mail.smtp.token}")
 	private String smtpToken;
 
-	// bean to send email which using SMTP protocol
+	
+	/**
+	 * bean to send email which using SMTP protocol
+	 * @return
+	 */
 	@Bean
 	public JavaMailSender javaMailSender() {
 		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();

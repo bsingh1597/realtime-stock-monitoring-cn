@@ -36,7 +36,14 @@ public class SecurityConfig {
 	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 	
-	//provides authentication support to verify user's identity by username, password
+	
+	/**
+	 * provides authentication support to verify user's identity by username, password
+	 * @param http
+	 * @param userDetailService
+	 * @return
+	 * @throws Exception
+	 */
 	@Bean
 	public AuthenticationManager authenticationManager(HttpSecurity http,
 			UserServiceImpl userDetailService) throws Exception {
@@ -44,7 +51,13 @@ public class SecurityConfig {
 				.passwordEncoder(passwordEncoder).and().build();
 	}
 	
-	// contains filters to execute security features 
+
+	/**
+	 * contains filters to execute security features 
+	 * @param http
+	 * @return
+	 * @throws Exception
+	 */
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		
@@ -52,7 +65,7 @@ public class SecurityConfig {
 		
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().exceptionHandling()
 		.authenticationEntryPoint(authenticationEntryPoint).and()
-		.authorizeRequests((autz) -> autz.antMatchers("/login", "/register/**", "/webSocket/**", "/chatroom/**","/subscribe").permitAll()
+		.authorizeRequests((autz) -> autz.antMatchers("/login", "/register/**", "/webSocket/**", "/chatroom/**","/subscribe/trigger", "/unsubscribe/trigger").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
 		.addFilterBefore(new JwtAuthFilter(userService, jwtTokenHelper),
 				UsernamePasswordAuthenticationFilter.class);

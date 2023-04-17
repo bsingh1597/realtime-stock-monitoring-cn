@@ -16,18 +16,25 @@ import com.uga.websockets.helper.JwtTokenHelper;
 
 import io.jsonwebtoken.io.IOException;
 
-
 public class JwtAuthFilter extends OncePerRequestFilter {
 
 	private UserDetailsService userDetailsService;
 	private JwtTokenHelper jwtTokenHelper;
 
+	/**
+	 * Used for authenticating the users using JWT.
+	 * @param userDetailsService
+	 * @param jwtTokenHelper
+	 */
 	public JwtAuthFilter(UserDetailsService userDetailsService, JwtTokenHelper jwtTokenHelper) {
 		this.userDetailsService = userDetailsService;
 		this.jwtTokenHelper = jwtTokenHelper;
 
 	}
 
+	/**
+	 * To internal validation of the JWT token
+	 */
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException, java.io.IOException {

@@ -30,14 +30,24 @@ public class WebSocketTriggerController {
 	@Autowired
 	SimpMessagingTemplate simpMessagingTemplate;
 
-	@PostMapping("/subscribe")
+	/**
+	 * Method for subscribing to the stocks 
+	 * @param triggerData
+	 * @return
+	 */
+	//controller method to store subscribed stocks
+	@PostMapping("/subscribe/trigger")
 	public String subscribeToStock(@RequestBody TriggerData triggerData) {
 
 		logger.info("Inside subscribeToStock: {}", triggerData);
 		subscribedTriggers.add(triggerData);
-		return "Subscribed to Stock";
+		return String.format("Subscribed to the stock %s for %s at Price %s", triggerData.getSymbol(),
+				triggerData.getTriggerType(), triggerData.getPrice());
 	}
 
+	/**
+	 * to check the stock price for every 6 seconds
+	 */
 	@Scheduled(fixedDelay = 6000) // run the code every minute
 	public void checkStockPrice() {
 		logger.info("Inside checkStockPrice");
@@ -77,11 +87,26 @@ public class WebSocketTriggerController {
 
 	}
 
-	// This uses simMessagingTeplate to push trigger data to topic which is subscribed by the clients
+	/**
+	 * This uses simMessagingTeplate to push trigger data to topic which is subscribed by the clients
+	 * @param triggerData
+	 * @return
+	 */
 	public TriggerData sendAlert(@Payload TriggerData triggerData) {
 		logger.info("Inside SendAlert" + triggerData);
 		simpMessagingTemplate.convertAndSend("/trigger/alert", triggerData);
 		return triggerData;
+	}
+	
+	//controller method to remove unsubscribed stocks
+	@PostMapping("/unsubscribe/trigger")
+	public String unsubscribeToStock(@RequestBody TriggerData triggerData) {
+		
+		logger.info("Inside unSubscribeToStock: {}", triggerData);
+		subscribedTriggers.remove(triggerData);
+		
+		return String.format("Unsubscribed from the stock %s for %s at Price %s", triggerData.getSymbol(),
+				triggerData.getTriggerType(), triggerData.getPrice());
 	}
 
 }
