@@ -14,7 +14,11 @@ React 18.2.0<br>
 Finnhub API is used to fetch the stocks real time data. Below link includes the documentation of Finnhub API.
 https://finnhub.io/docs/api/websocket-trades
 
-Steps to run client and server side code is present in Readme.md in the respective folders.
+We have created a Docker file to build and run this application. Use below command line input to execute the docker file in the root directly, which in turn will build the dockers for the server and client and exeucte them. Maven 3 and docker are the requirements to run the application.
+
+docker-compose up
+
+Alternatively use the steps present in Readme.md in the client and server folders to execute the application.
 
 ## Application Overview:
 Below is the register page for clients to enter their information which will be encrypted and stored in the database. 
