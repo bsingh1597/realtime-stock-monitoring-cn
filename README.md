@@ -1,7 +1,7 @@
 # Realtime-Stock-Monitoring-CN
 A stock monitoring application for users to monitor multiple stocks and the price fluctuations of the stocks in real time and allows users to share their comments on the stock with other users. Users can set triggers on the stock price and receive alert notifications when trigger price hits on that particular stock. Application has two parts, the client side code and the server side code. 
 
-Server side code is written in Java using Spring boot framework and is responsible for authenticating the clients, connecting to the finnhub api via websockets and subscribing to a particular stock for the triggers set by clients and processing the messages sent from finnhub api regarding the stock prices, and sends the alerts once stoploss or target is hit. Server also handles broadcasting the messages for the clients.
+Server side code is written in Java using Spring boot framework and is responsible for authenticating the clients, connecting to the finnhub api and subscribing to a particular stock for the triggers set by clients and processing the messages sent from finnhub api regarding the stock prices, and sends the alerts once stoploss or target is hit. Server also handles broadcasting the messages for the clients.
 
 Client Side code is written in JavaScript using ReactJS framework and it is responsible for connecting to finnhub api via websockets directly to fetch particular stock price and display to the users. Client also allows users to set triggers on the stock price and sends the requests to the server.
 
@@ -39,7 +39,7 @@ Clients can search for stocks and add it to the stock watch table. Client code w
 Below snip shows the newly added Microsoft stock to the stock watch table.
 <img width="1440" alt="Adding stock" src="https://user-images.githubusercontent.com/55336660/232325088-ec170efe-df1b-4036-a8bf-5b2815286cf7.png">
 <br>
-Clients can set the triggers (stopLoss, target) for a particular stock, this request will be sent from client side code to the server. Server side code will handle this request by storing the trigger information in a Hash map and subscribing to the finnhub api for this stock via websockets. Server will then process the quotes sent from finnhub api and compare the price with the trigger price and generate the alert to the client once trigger price is reached.
+Clients can set the triggers (stopLoss, target) for a particular stock, this request will be sent from client side code to the server. Server side code will handle this request by storing the trigger information in a Hash map and subscribing to the finnhub api for this stock. Server will then process the quotes sent from finnhub api and compare the price with the trigger price and generate the alert to the client once trigger price is reached.
 <img width="1440" alt="subscribe stock" src="https://user-images.githubusercontent.com/55336660/232325569-e4dc3101-e732-4894-bc76-b71765c426ae.png">
 <br>
 Below snip shows the alert message which is displayed for the client once the trigger is hit for a particular stock.
