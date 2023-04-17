@@ -6,7 +6,16 @@
     padding: 15px;
     height: 30px;
 }
-
+.trigger-container1 {
+    display: flex;
+    /* justify-content: space-between; */
+    /* align-items: center; */
+    position: relative;
+    left: 100%;
+    top: -17%;
+    padding: 15px;
+    height: 30px;
+}
 .trigger-container button{
     height: 52px;
     color: "blue";

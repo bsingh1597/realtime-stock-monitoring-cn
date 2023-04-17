@@ -57,6 +57,7 @@
     height: auto;
     position: relative;
     bottom: 75px;
+    left: 120px;
 }
 
 .chat-content h4 {

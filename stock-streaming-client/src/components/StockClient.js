@@ -362,7 +362,7 @@ export default function StockClient() {
                     Submit
                 </Button>
             </div>
-            <div className="trigger-container" style={{ position: "flex" }}>
+            <div className="trigger-container1" style={{ position: "flex" }}>
                 <FormControl
                     variant="standard"
                     sx={{ m: 1, minWidth: 120 }}
