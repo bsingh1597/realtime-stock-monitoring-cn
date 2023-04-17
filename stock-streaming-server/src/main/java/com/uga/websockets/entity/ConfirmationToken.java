@@ -15,7 +15,7 @@ import javax.persistence.Table;
 //confirmation token entity which has id, token, createdon date and time
 //confirmation token is mapped to the user by foreign key mapping
 @Entity
-@Table(name = "confirmation_token")
+@Table(name = "confirmation_token", schema = "stock_streaming_server")
 public class ConfirmationToken {
 	
 	@Id
