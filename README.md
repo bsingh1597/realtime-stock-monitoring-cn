@@ -16,6 +16,10 @@ https://finnhub.io/docs/api/websocket-trades
 
 We have created a Docker file to build and run this application. Use below command line input to execute the docker file in the root directly, which in turn will build the dockers for the server and client and exeucte them. Maven 3 and docker are the requirements to run the application.
 
+chmod -R 777 realtime-stock-monitoring-cn
+cd realtime-stock-monitoring-cn
+docker build -t stock-streaming-server ./stock-streaming-server
+docker build -t stock-streaming-client ./stock-streaming-client
 docker-compose up
 
 Alternatively use the steps present in Readme.md in the client and server folders to execute the application.
