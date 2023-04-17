@@ -73,19 +73,21 @@ export default function StockClient() {
     }]
 
     let initalSubsTkrs = []
+    // This hook is called when file is rebdered once every time
     useEffect(() => {
-        // console.log("Initial stocks1: ", JSON.stringify(sessionStorage.getItem("currentSubsTkr")))
-        // let test = JSON.parse(sessionStorage.getItem("subsTriggersList"))
+
         currentSubsTkr.map((stockName) => {
-            console.log("tkrs 1: " + stockName)
+            // console.log("tkrs 1: " + stockName)
             const tkr = StockConstant.SYMBOL_MAP[stockName]
             initalSubsTkrs.push({ symbol: tkr, companyName: stockName, price: 0, pl: 0 })
 
         })
 
-        console.log("Should only be called once")
+        // console.log("Should only be called once")
+        // This is the data passed to the table
         setRowData(initalSubsTkrs)
 
+        // While the connection is opened with Finhub subscribe the current susbcribed stocks
         wsClient.onopen = () => {
             console.log('WebSocket connection established with finhub.');
             currentSubsTkr.map(stockTkr => {
@@ -101,28 +103,28 @@ export default function StockClient() {
         connect()
     }, [])
 
+    // This function extablished the connection between frontend client and stock-streaming-server
     const connect = () => {
         console.log("Inside connect function StockClient")
-        // const jwtToken = sessionStorage.getItem("jwtToken")
-        let Sock = new SockJS('http://localhost:8082/webSocket'
-            // , null, {
-            //     headers: {'Authorization': 'Bearer '+ jwtToken}}
-        );
+        let Sock = new SockJS('http://localhost:8082/webSocket');
         stompClient1 = over(Sock);
         stompClient1.connect({}, onConnected, onError);
         console.log("After setting the connection")
     }
 
+    // Subscribe the topic alert so any message pushed on that will be received by this client
     const onConnected = () => {
         console.log("On Connected StockClient")
         stompClient1.subscribe('/trigger/alert', onAlertMessageReceived);
     }
 
+    // This is a callback called whever this is message pusehd to /trigger/alert
     const onAlertMessageReceived = (res) => {
         let resData = JSON.parse(res.body);
         console.log("ALERTTT!! StockClient", JSON.stringify(resData));
+
+        // Filter the trigger message so only if the client has subscribed for that trigger than receives it
         subsTriggersList.filter((triggerData => {
-            // console.log("triggerData: ", JSON.stringify(triggerData))
             return resData && resData.symbol === triggerData.symbol && resData.price === triggerData.price && resData.triggerType === triggerData.triggerType
         })).map((triggerData) => {
             console.log(format(StockConstant.TRIGGER_MESSAGE_TEMPLATE, resData.triggerType, resData.symbol, resData.price))
@@ -136,6 +138,7 @@ export default function StockClient() {
         console.log("Error from our server: ", JSON.stringify(err))
     }
 
+    // This function is called when there is message from the Finhub Api
     wsClient.onmessage = (res) => {
         // console.log('On message' + JSON.stringify(res.data));
         const response = JSON.parse(res.data)
@@ -145,6 +148,7 @@ export default function StockClient() {
 
     };
 
+    // This function sets the stock price and chnage to the table
     const updateStockPrice = (data) => {
         // console.log('On message 1' + JSON.parse(data));
         const stockRes = JSON.parse(data)
@@ -154,6 +158,7 @@ export default function StockClient() {
             if (item.symbol === stockRes.data[0].s && item.price !== stockRes.data[0].p) {
                 const latestPrice = stockRes.data[0].p
                 const previousPrice = item.price
+                // Calculate the chnage percentage based on the previous price and recent price
                 const percentageChange = (latestPrice - previousPrice) / previousPrice * 100
 
                 return {
@@ -167,15 +172,18 @@ export default function StockClient() {
         }));
     }
 
-    const handleOnChagenSearchTkr = (event) => {
+    // Sets the currently searched stock
+    const handleOnChageSearchTkr = (event) => {
         setSearchTkr(event.target.value)
     }
 
+    // When a stock is seleted from the drop down
     const handleOnClickDropdown = (searchVal) => {
         console.log("Selected from dropdown: " + searchVal)
         setSearchTkr(searchVal)
     }
 
+    // Submit after selecting all the fields of trigger
     const handleSetTriggerSubmit = () => {
         console.log("trigger price: " + triggerPrice)
         console.log("trigger stock: " + triggerStock)
@@ -189,6 +197,8 @@ export default function StockClient() {
             subsTriggersList.push(triggerData);
             localStorage.setItem("subsTriggersList", JSON.stringify(subsTriggersList))
             setSubsTriggersList(subsTriggersList);
+
+            // Call to stock-streaming-server to subscribe the stock
             axios
                 .post("http://localhost:8082/subscribe", triggerData)
                 .then((res) => {
@@ -220,6 +230,7 @@ export default function StockClient() {
             setCurrentSubsTkr([...currentSubsTkr, stockName])
             setRowData([...rowData, { symbol: tkr, companyName: stockName, price: 0, pl: 0 }])
             currentSubsTkr.push(stockName)
+            // For session management
             localStorage.setItem("currentSubsTkr", currentSubsTkr)
         }
     };
@@ -228,7 +239,7 @@ export default function StockClient() {
         <>
             <div className="search-container">
                 <section>
-                    {/**assertive  will have screen reader annouce the msg immdeitayly if focus is set here */}
+                    {/** To show subscribed to trigger message */}
                     <p
                         className={goodMsg ? "errmsg1" : "offscreen"}
                         aria-live="assertive"
@@ -238,7 +249,7 @@ export default function StockClient() {
                     </p>
                 </section>
                 <section>
-                    {/**assertive  will have screen reader annouce the msg immdeitayly if focus is set here */}
+                    {/**This is used to show the triger info to user */}
                     <p
                         className={triggerMessage ? "errmsg" : "offscreen"}
                         aria-live="assertive"
@@ -248,15 +259,17 @@ export default function StockClient() {
                     </p>
                 </section>
                 <div className="search-inner">
+                    {/* textfield where we enter the trigger name to be searched  */}
                     <TextField
                         className="enter-tkr"
                         type="text"
                         label="Enter Stock Name..."
                         value={searchTkr}
-                        onChange={handleOnChagenSearchTkr} />
+                        onChange={handleOnChageSearchTkr} />
                     <Button className="search-tkr" variant="contained" onClick={() => subscribeTkr(searchTkr)}>Search</Button>
                 </div>
                 <div className="dropdown">
+                    {/* Logic for showing the drop from listed stock names */}
                     {stockOptions.filter(stock => {
                         return searchTkr &&
                             stock.toLocaleLowerCase().includes(searchTkr.toLowerCase()) &&  // Checks is the chars passed are included in a stock
@@ -276,6 +289,7 @@ export default function StockClient() {
                     data={rowData} />
             </div>
             <div className="trigger-container">
+                {/* To show stock names from the list of subscribed stocks */}
                 <FormControl
                     variant="standard"
                     sx={{ m: 1, minWidth: 120 }}
@@ -294,6 +308,7 @@ export default function StockClient() {
                         })}
                     </Select>
                 </FormControl>
+                 {/* Price for trigger */}
                 <TextField
                     style={{ "margin-top": "0px", "height": "1px" }}
                     id="outlined-basic"
@@ -306,6 +321,7 @@ export default function StockClient() {
                     variant="standard"
                     sx={{ m: 1, minWidth: 120 }}
                 >
+                    {/* Type of Trigger StopLoss or Target */}
                     <InputLabel style={{ "margin-top": "0px" }} id="select-label">Trigger Type</InputLabel>
                     <Select
                         labelId="select-label"
