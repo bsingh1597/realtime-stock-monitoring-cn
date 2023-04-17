@@ -1,0 +1,75 @@
+.sign-title {
+    color: white;
+    text-align: center;
+}
+
+a:link {
+    text-decoration: none;
+}
+
+.signupform {
+    display: grid;
+    justify-content: center;
+    text-align: center;
+    padding: 4px;
+}
+
+.mtitle {
+    text-align: center;
+    margin: 5px;
+}
+
+.sign-up-page {
+    color: white;
+    display: grid;
+
+}
+
+.register-button {
+    background-color: #FE7F7F;
+    border: none;
+    width: 225px;
+    height: 35px;
+    padding: 8px 32px;
+    font-size: 16px;
+    border-radius: 15px;
+    transition-duration: 0.4s;
+    margin-top: 14px;
+}
+
+.register-button:hover {
+    background-color: #E74545;
+  }
+
+input[type=stext] {
+    border: none;
+    padding: 6px 10px;
+    background-color: rgb(204, 204, 204);
+}
+
+.checkbox {
+    display: grid;
+    grid-template-columns: 1em auto;
+    gap: 0.5em;
+    justify-content: center;
+}
+
+.mtitle {
+    display: grid;
+    grid-template-columns: minmax(15px, 1fr) auto minmax(15px, 1fr);
+    align-items: center;
+    text-align: center;
+    grid-gap: 20px;
+    width: 100%;
+}
+
+.mtitle:before,
+.mtitle:after {
+    content: '';
+    border-top: 1px solid;
+}
+
+hr.half-width {
+    width:68.5%;
+    margin: 0 auto;
+  }

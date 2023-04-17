@@ -11,3 +11,23 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+p.offscreen {
+  display: none;
+}
+
+p.errmsg {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  width: 550px;
+  top: -60px;
+}
+p.errmsg1 {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  width: 450px;
+  top: -120px;
+}
+

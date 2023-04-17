@@ -1,0 +1,19 @@
+.verify-body {
+    color: black;
+    text-align: center;
+    margin-top: 15%;
+    background-color: white;
+    height: 120px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    border-radius: 8px;
+    display: grid;
+    margin: auto;
+    width: 420px;
+    margin-top: 18%;
+    height: 200px;
+}
+
+.red {
+    color: #FE7F7F;
+}

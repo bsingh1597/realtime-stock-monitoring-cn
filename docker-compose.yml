@@ -1,0 +1,18 @@
+version: '3'
+services:
+  stock-streaming-server:
+    image: "stock-streaming-server"
+    build: ./stock-streaming-server/
+    container_name: stock-streaming-server
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING.PROFILES.ACTIVE=default
+  stock-streaming-client:
+    image: "stock-streaming-client"
+    build: ./stock-streaming-client/
+    container_name: stock-streaming-client
+    ports:
+      - "3000:3000"
+    links:
+      - stock-streaming-server
