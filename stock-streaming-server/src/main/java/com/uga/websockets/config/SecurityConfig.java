@@ -65,7 +65,7 @@ public class SecurityConfig {
 		
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().exceptionHandling()
 		.authenticationEntryPoint(authenticationEntryPoint).and()
-		.authorizeRequests((autz) -> autz.antMatchers("/login", "/register/**", "/webSocket/**", "/chatroom/**","/subscribe").permitAll()
+		.authorizeRequests((autz) -> autz.antMatchers("/login", "/register/**", "/webSocket/**", "/chatroom/**","/subscribe/trigger", "/unsubscribe/trigger").permitAll()
 				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
 		.addFilterBefore(new JwtAuthFilter(userService, jwtTokenHelper),
 				UsernamePasswordAuthenticationFilter.class);

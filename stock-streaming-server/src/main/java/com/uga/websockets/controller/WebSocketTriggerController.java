@@ -35,12 +35,14 @@ public class WebSocketTriggerController {
 	 * @param triggerData
 	 * @return
 	 */
-	@PostMapping("/subscribe")
+	//controller method to store subscribed stocks
+	@PostMapping("/subscribe/trigger")
 	public String subscribeToStock(@RequestBody TriggerData triggerData) {
 
 		logger.info("Inside subscribeToStock: {}", triggerData);
 		subscribedTriggers.add(triggerData);
-		return "Subscribed to Stock";
+		return String.format("Subscribed to the stock %s for %s at Price %s", triggerData.getSymbol(),
+				triggerData.getTriggerType(), triggerData.getPrice());
 	}
 
 	/**
@@ -94,6 +96,17 @@ public class WebSocketTriggerController {
 		logger.info("Inside SendAlert" + triggerData);
 		simpMessagingTemplate.convertAndSend("/trigger/alert", triggerData);
 		return triggerData;
+	}
+	
+	//controller method to remove unsubscribed stocks
+	@PostMapping("/unsubscribe/trigger")
+	public String unsubscribeToStock(@RequestBody TriggerData triggerData) {
+		
+		logger.info("Inside unSubscribeToStock: {}", triggerData);
+		subscribedTriggers.remove(triggerData);
+		
+		return String.format("Unsubscribed from the stock %s for %s at Price %s", triggerData.getSymbol(),
+				triggerData.getTriggerType(), triggerData.getPrice());
 	}
 
 }
