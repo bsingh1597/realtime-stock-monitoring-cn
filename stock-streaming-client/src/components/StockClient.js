@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { w3cwebsocket as WebSocket } from "websocket";
 import axios from "axios";
 import { format } from 'react-string-format';
@@ -15,28 +15,24 @@ const WS_URL = StockConstant.FINHUB_WS_API + StockConstant.FINHUB_TOKEN
 
 const wsClient = new WebSocket(WS_URL)
 
-// const triggerClient = new WebSocket(WS_URL)
-
 var stompClient1 = null;
 export default function StockClient() {
 
-
     const stockOptions = StockConstant.STOCK_LIST
     const triggerThresholdTypes = StockConstant.TRIGGER_TYPES
+
     // Use state hook variable to manage the changing state of variable
     const [goodMsg, setGoodMsg] = useState("");
     const [rowData, setRowData] = useState([])
-    const [searchTkr, setSearchTkr] = useState("")
-    const [currentSubsTkr, setCurrentSubsTkr] = useState([])
-    const [triggerPrice, setTriggerPrice] = useState("")
-    const [triggerStock, setTriggerStock] = useState("")
-    const [triggerThresholdType, setTriggerThresholdType] = useState("")
-    const [triggerMessage, setTriggerMessage] = useState("")
-    const [subsTriggersList, setSubsTriggersList] = useState([]);
-
-    const triggerMessageTemplate = '{0} for Stock {1} at price {2}';
-
-    const intialStocks = ['Amazon', 'Bitcoin USD']
+    const [searchTkr, setSearchTkr] = useState("") // Hold the value of newly searched stock
+    // List of currrently subscribed stock names NOT symbols
+    const [currentSubsTkr, setCurrentSubsTkr] = useState(localStorage.getItem("currentSubsTkr") ? localStorage.getItem("currentSubsTkr").split(",") : StockConstant.INITIAL_STOCK_LIST)
+    const [triggerPrice, setTriggerPrice] = useState("")  // Price of the set trigger
+    const [triggerStock, setTriggerStock] = useState("")  // Symbol of the set triger
+    const [triggerThresholdType, setTriggerThresholdType] = useState("")  // Threshold type StopLoss or Target of the set trigger
+    const [triggerMessage, setTriggerMessage] = useState("")  // Message to be shown as alert when the trigger is hit
+    // List of subscribed triggers (This is used for showing trigger only to requested client)
+    const [subsTriggersList, setSubsTriggersList] = useState(localStorage.getItem("subsTriggersList") ? JSON.parse(localStorage.getItem("subsTriggersList")) : [])
 
     let initialData = [{
         symbol: "",
@@ -77,24 +73,24 @@ export default function StockClient() {
     }]
 
     let initalSubsTkrs = []
-    let initialSubsStocks = []
     useEffect(() => {
-        intialStocks.map((stockName) => {
+        // console.log("Initial stocks1: ", JSON.stringify(sessionStorage.getItem("currentSubsTkr")))
+        // let test = JSON.parse(sessionStorage.getItem("subsTriggersList"))
+        currentSubsTkr.map((stockName) => {
             console.log("tkrs 1: " + stockName)
             const tkr = StockConstant.SYMBOL_MAP[stockName]
             initalSubsTkrs.push({ symbol: tkr, companyName: stockName, price: 0, pl: 0 })
-            initialSubsStocks.push(stockName)
 
         })
 
         console.log("Should only be called once")
         setRowData(initalSubsTkrs)
-        setCurrentSubsTkr(initialSubsStocks)
 
         wsClient.onopen = () => {
             console.log('WebSocket connection established with finhub.');
-            intialStocks.map(stockTkr => {
+            currentSubsTkr.map(stockTkr => {
                 const tkr = StockConstant.SYMBOL_MAP[stockTkr]
+                // Subscribing some stocks which will be initially viewed to client once this componene is rendered for the first time
                 wsClient.send(
                     format(StockConstant.SUBSCRIBE_TEMPLATE, tkr)
                 )
@@ -107,7 +103,7 @@ export default function StockClient() {
 
     const connect = () => {
         console.log("Inside connect function StockClient")
-        const jwtToken = sessionStorage.getItem("jwtToken")
+        // const jwtToken = sessionStorage.getItem("jwtToken")
         let Sock = new SockJS('http://localhost:8082/webSocket'
             // , null, {
             //     headers: {'Authorization': 'Bearer '+ jwtToken}}
@@ -125,15 +121,12 @@ export default function StockClient() {
     const onAlertMessageReceived = (res) => {
         let resData = JSON.parse(res.body);
         console.log("ALERTTT!! StockClient", JSON.stringify(resData));
-        console.log("subsTriggerList: ", JSON.stringify(subsTriggersList))
         subsTriggersList.filter((triggerData => {
-            console.log("triggerData: ", JSON.stringify(triggerData))
-            // console.log("triggerDataLocal: ", JSON.stringify(resData))
-            // console.log("boolean1: ", resData.symbol === triggerData.symbol && resData.triggerType === triggerData.triggerType)
+            // console.log("triggerData: ", JSON.stringify(triggerData))
             return resData && resData.symbol === triggerData.symbol && resData.price === triggerData.price && resData.triggerType === triggerData.triggerType
         })).map((triggerData) => {
-            console.log(format(triggerMessageTemplate, resData.triggerType, resData.symbol, resData.price))
-            setTriggerMessage(format(triggerMessageTemplate, resData.triggerType, resData.symbol, resData.price));
+            console.log(format(StockConstant.TRIGGER_MESSAGE_TEMPLATE, resData.triggerType, resData.symbol, resData.price))
+            setTriggerMessage(format(StockConstant.TRIGGER_MESSAGE_TEMPLATE, resData.triggerType, resData.symbol, resData.price));
         }
         )
 
@@ -147,7 +140,6 @@ export default function StockClient() {
         // console.log('On message' + JSON.stringify(res.data));
         const response = JSON.parse(res.data)
         if (response.data) {
-            // console.log("it is in")
             updateStockPrice(res.data)
         }
 
@@ -156,7 +148,6 @@ export default function StockClient() {
     const updateStockPrice = (data) => {
         // console.log('On message 1' + JSON.parse(data));
         const stockRes = JSON.parse(data)
-        // console.log("First data in the array: " + JSON.stringify(stockRes.data[0].s))
         setRowData(rowData.map(item => {
             // console.log("Iteam checking is: " + item.symbol)
 
@@ -190,13 +181,13 @@ export default function StockClient() {
         console.log("trigger stock: " + triggerStock)
         console.log("trigger type: " + triggerThresholdType)
         if (triggerPrice && triggerStock && triggerThresholdType) {
-            // setSubsTriggers([...subsTriggers, triggerStock])
             const triggerData = {
                 symbol: triggerStock,
                 price: parseFloat(triggerPrice).toFixed(2),
                 triggerType: triggerThresholdType
             }
             subsTriggersList.push(triggerData);
+            localStorage.setItem("subsTriggersList", JSON.stringify(subsTriggersList))
             setSubsTriggersList(subsTriggersList);
             axios
                 .post("http://localhost:8082/subscribe", triggerData)
@@ -207,7 +198,6 @@ export default function StockClient() {
                 })
                 .catch((e) => {
                     console.log("Error in Subscribe call " + JSON.stringify(e));
-                    // setErrMsg()
                 });
         };
         setTriggerStock("")
@@ -215,6 +205,7 @@ export default function StockClient() {
         setTriggerThresholdType("")
     }
 
+    // This function is called on clicking search after stock name selection and add the stock to currently subscribed stock
     const subscribeTkr = (stockName) => {
         console.log("Searched: " + stockName)
         if (stockName !== "" && StockConstant.SYMBOL_MAP[stockName]) {
@@ -222,11 +213,14 @@ export default function StockClient() {
             setSearchTkr("")
 
             const tkr = StockConstant.SYMBOL_MAP[stockName]
+            // Call to Finhub API to subscribe the stock
             wsClient.send(
                 format(StockConstant.SUBSCRIBE_TEMPLATE, tkr)
             )
             setCurrentSubsTkr([...currentSubsTkr, stockName])
             setRowData([...rowData, { symbol: tkr, companyName: stockName, price: 0, pl: 0 }])
+            currentSubsTkr.push(stockName)
+            localStorage.setItem("currentSubsTkr", currentSubsTkr)
         }
     };
 
@@ -283,7 +277,6 @@ export default function StockClient() {
             </div>
             <div className="trigger-container">
                 <FormControl
-                    // style={{ height: "25px" }} 
                     variant="standard"
                     sx={{ m: 1, minWidth: 120 }}
                 >
@@ -310,11 +303,10 @@ export default function StockClient() {
                     onChange={(e) => setTriggerPrice(e.target.value)}
                 />
                 <FormControl
-                    // style={{ height: "25px" }} 
                     variant="standard"
                     sx={{ m: 1, minWidth: 120 }}
                 >
-                    <InputLabel style={{ "margin-top": "0px" }} id="select-label">Set Threshold Type</InputLabel>
+                    <InputLabel style={{ "margin-top": "0px" }} id="select-label">Trigger Type</InputLabel>
                     <Select
                         labelId="select-label"
                         style={{ "margin-top": "15px" }}

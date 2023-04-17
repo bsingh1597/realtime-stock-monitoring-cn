@@ -37,3 +37,7 @@ export const FINHUB_WS_API = "wss://ws.finnhub.io?token="
 export const SUBSCRIBE_TEMPLATE = '{"type":"subscribe","symbol":"{0}"}'
 
 export const TRIGGER_TYPES = ['StopLoss', 'Target']
+
+export const TRIGGER_MESSAGE_TEMPLATE = '{0} for Stock {1} at price {2}';
+
+export const INITIAL_STOCK_LIST = ['Amazon', 'Bitcoin USD']
